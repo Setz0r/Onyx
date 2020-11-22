@@ -10,11 +10,12 @@ namespace Scripting
         public void Test()
         {
             // create a script engine
-
-            using (var engine = new V8ScriptEngine())
+            
+            using (var engine = new V8ScriptEngine(V8ScriptEngineFlags.EnableDynamicModuleImports))
 
             {
-
+                
+                
                 // expose a host type
 
                 engine.AddHostType("Console", typeof(Console));
@@ -160,7 +161,7 @@ namespace Scripting
                 engine.Execute("values = new Int32Array([1, 2, 3, 4, 5])");
 
                 var values = (ITypedArray<int>)engine.Script.values;
-
+                
                 Console.WriteLine(string.Join(", ", values.ToArray()));
 
             }
