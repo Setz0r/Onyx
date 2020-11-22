@@ -355,5 +355,6 @@ MigrationBackup/
 !Release
 !Release/Conf
 !Release/Scripts
+!Release/Logs
 Release/*.*
 Release/runtimes
