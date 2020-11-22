@@ -1,0 +1,12 @@
+﻿include "common.fbs";
+
+namespace Data.FBObjects;
+
+table FBLinkshell {
+	id:uint;
+	name:string;
+	color:Data.FBCommon.FBColor;
+	message:string;
+}
+
+root_type FBLinkshell;

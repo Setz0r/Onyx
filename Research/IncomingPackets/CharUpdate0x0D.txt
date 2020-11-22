@@ -1,0 +1,83 @@
+char update packet 0x00D notes
+--------------------------------
+0x04:0x07 - uint32 - player id
+0x08:0x09 - uint16 - player index
+0x0A:     - byte   - update mask
+0x0B:     - byte   - rotation
+0x0C:0x0F - uint32 - player X
+0x10:0x13 - uint32 - player Y
+0x14:0x17 - uint32 - player Z
+0x18:0x19 - uint16 - run count
+0x1A:0x1B - uint16 - target index << 1
+0x1C:     - byte   - movement speed
+0x1D:     - byte   - animation speed
+0x1E:     - byte   - hp %
+0x1F:     - byte   - animation
+0x20:0x23 - uint32 - misc flags
+0x24:     - byte   - ls color r
+0x25:     - byte   - ls color g
+0x26:     - byte   - ls color b
+0x27:     - byte   - charmed?
+0x28:     - byte   - unknown : ent+300 ^= ((ent+300 ^ (pkt[0x28] shl 22)) & 0x400000)
+0x29:     - byte   - allegience type
+0x2A:     - byte   - flags (bit 7 new player)
+0x2B:     - byte   - flags (bit 0 mentor)
+0x2C:0x2F - uint32 - claimer : ent+388
+0x30:0x31 - uint16 - costume
+0x32:     - byte   - unknown : ent+656 = pkt[0x32]
+0x33:     - byte   - unknown : ent+304 ^= ((ent+304 ^ (pkt[0x33] shl 25)) & 0x2000000)
+0x34:0x37 - uint32 - not sure, possible npc id, dsp has it equal 0x010CA248(black chocobo) 17605192 not in db
+0x38:0x3B - uint32 - unused as far as i can tell
+0x3C:0x3D - uint16 - pet target id
+0x3E:0x3F - uint16 - unknown, checked if set, ent+292 ^= (ent+292 ^ (2 * pkt[0x2A])) & 0xE, ent+304 = ent+304 | 4
+0x40:     - byte   - unknown, if diff than byte at ent+526 sets lobyte(ent+300) = ent+300 | 0x80, then remembers value at ent+526
+0x41:     - byte   - unknown, if diff than byte at ent+527 sets lobyte(ent+300) = ent+300 | 0x80, then remembers value at ent+527
+0x42:     - byte   - unknown, passed to function (ent,pkt[0x42] & 0xf, (pkt[0x42] shr 4) & 3, (pkt[0x42] shr 6) & 1)
+0x43:     - byte   - unknown, stored in ent+516 as float * 0.1
+0x44:0x47 - uint32 - unknown, possibly same as 0x24-0x27 in entity update, ent+471 = pkt[0x44] shr 4, [0x44 is also referenced by byte ent+316^=ent+316^pkt[0x44] << 16 & 0xF0000]
+0x48:     - byte   - face
+0x49:     - byte   - race
+0x4A:0x4B - uint16 - head model
+0x4C:0x4D - uint16 - body model
+0x4E:0x4F - uint16 - hands model
+0x50:0x51 - uint16 - legs model
+0x52:0x53 - uint16 - feet model
+0x54:0x55 - uint16 - main weapon model
+0x56:0x57 - uint16 - sub weapon model
+0x58:0x59 - uint16 - ranged weapon model
+0x5A:0x69 - string - player name
+
+============= notes ===============
+
+run count
+v2 = ent
+a2 = packetRunCount
+v3 = ent[x124(292)]
+ent[x2B8(696)] = a2
+v3 &= 0x7F(127)
+ent[x124(292)] = v3
+v4 = ent[x2BC(700)]
+ent[x2BC(700)] = a2
+if (v4 <= a2)
+{
+  ent[x2C0(704)] = a2 - v4 
+}
+else
+{
+  ent[x2C0(704)] = a2
+  sub_1008C270((int)v2);
+}
+v5 = ent[x124(292)]
+ent[x2C0(704)] += 8
+result = v5 | 0x10000
+ent[x124(292)] = result
+return result
+
+
+
+
+
+
+
+
+

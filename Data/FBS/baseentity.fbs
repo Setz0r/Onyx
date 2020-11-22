@@ -1,0 +1,29 @@
+﻿include "common.fbs";
+
+namespace Data.FBEntities;
+
+struct FBModelInfo {
+	head:ushort;
+	body:ushort;
+	hands:ushort;
+	legs:ushort;
+	feet:ushort;
+	mainWeapon:ushort;
+	subWeapon:ushort;
+	rangedWeapon:ushort;
+}
+
+table FBBaseEntity {
+	id:uint;
+	targetId:ushort;
+	updateMask:ubyte;
+	rotation:ubyte;
+	position:Data.FBCommon.FBVec3;
+	moveCount:ushort;
+	targetIndex:ushort;
+	moveSpeed:ubyte;
+	animationSpeed:ubyte;
+	hpPct:ubyte;
+}
+
+root_type FBBaseEntity;
