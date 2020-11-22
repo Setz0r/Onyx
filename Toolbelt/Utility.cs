@@ -15,7 +15,6 @@ namespace Toolbelt
     {
         public static void TestBitStream(byte[] data)
         {
-
             BitStream bs = new BitStream(data);
             bs.ReadBits(208);
             byte letter = bs.ReadByte(7);
@@ -223,7 +222,7 @@ namespace Toolbelt
             byte[] hashValue;
             using (var md5 = MD5.Create())
             {
-                string hash = string.Format("EDEN_SESSION_HASH_{0}_{1}", accountId, username);
+                string hash = string.Format("ONYX_SESSION_HASH_{0}_{1}", accountId, username);
                 hashValue = md5.ComputeHash(md5.ComputeHash(Encoding.ASCII.GetBytes(hash)));
             }
             return hashValue;

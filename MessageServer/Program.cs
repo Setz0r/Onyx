@@ -17,7 +17,7 @@ namespace MessageServer
             }
             catch (Exception e)
             {
-                Console.WriteLine("Failed");
+                Console.WriteLine("Failed: " + e.Message);
                 failCounter++;
             }
 
