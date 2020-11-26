@@ -4,6 +4,16 @@ using System.Text;
 
 namespace Data.Game
 {
+    public enum PLAYERSTATUS : byte
+    {
+        NONE            = 0,
+        REQUESTING_ZONE = 1,
+        ZONING_IN       = 2,
+        PLAYING         = 3,
+        ZONING_OUT      = 4,
+        LEAVING_GAME    = 255
+    }
+
     [Flags]
     public enum ENTITYSTATUS : byte
     {
@@ -99,6 +109,14 @@ namespace Data.Game
         STELLAR_GLARE   = 0x11,
         GLOOM           = 0x12,
         DARKNESS        = 0x13
+    }
+
+    public enum CLUSTERSTATUS: byte
+    {
+        NONE            = 0,
+        LOADING         = 1,
+        RUNNING         = 2,
+        SHUTTINGDOWN    = 3
     }
 
     public enum ZONEID : UInt16
@@ -400,7 +418,8 @@ namespace Data.Game
         DYNAMIS_SAN_DORIA_D = 294,
         DYNAMIS_BASTOK_D = 295,
         DYNAMIS_WINDURST_D = 296,
-        DYNAMIS_JEUNO_D = 297
+        DYNAMIS_JEUNO_D = 297,
+        NONE = 999
     }
 
     public enum REGION : byte

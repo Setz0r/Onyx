@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using Networking;
 using System.Text;
+using Data.World;
 
 namespace Data.Entities
 {
@@ -33,10 +35,33 @@ namespace Data.Entities
             syncId = 1;
         }
         
-        public byte Gender()
+        public byte Gender
         {
-            return (byte)((look.model.race) % 2 ^ ((look.model.race > 6) ? 1 : 0));
+            get { return (byte)((look.model.race) % 2 ^ ((look.model.race > 6) ? 1 : 0)); }
         }
+
+        public int ProcessPacketData()
+        {
+            int bytesProcessed = 0;
+            if (client != null && client.bufferSize > 0)
+            {
+                //@todo process client data
+            }
+            return bytesProcessed;
+        }
+
+        public bool Load(UInt32 id)
+        {
+            return true;
+        }
+
+        public bool Save()
+        {
+            return true;
+        }
+
+        public UDPClient client;
+        public Zone zone;
 
         public PlayerRecord record;
         public UIntFlags nameFlags;
@@ -45,5 +70,7 @@ namespace Data.Entities
         public Linkshell linkshell2;
 
         public UInt16 syncId;
+        public PLAYERSTATUS playerStatus;
+
     }
 }

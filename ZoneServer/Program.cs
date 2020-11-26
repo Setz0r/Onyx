@@ -8,17 +8,26 @@ using System.Runtime.InteropServices;
 using Data.DataChunks.Outgoing;
 using Data.Game;
 using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
+using Networking;
 using Toolbelt;
 using System.Collections.Generic;
 using static Toolbelt.Logger;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Linq;
+using System.Security.Cryptography;
+using Data;
 
 namespace ZoneServer
 {
     class Program
     {
         public const string ConfigurationFile = "conf/game.conf";
-        public static Dictionary<string,string> Configuration;
+        public static Dictionary<string, string> Configuration;
 
         static bool LoadConfiguration()
         {
@@ -43,7 +52,7 @@ namespace ZoneServer
                             break;
                     }
                 }
-            } 
+            }
             catch (Exception e)
             {
                 Logger.Error("LoadingConfiguration : {0}", new[] { e.Message });
@@ -52,15 +61,17 @@ namespace ZoneServer
             return true;
         }
 
-        static void Main(string[] args)
+
+        private static void Main(string[] args)
         {
+            ThreadPool.GetMaxThreads(out int workerThreadsCount, out int ioThreadsCount);
             if (LoadConfiguration())
             {
-                TestJunk();
                 GameManager game = new GameManager();
                 game.Initialize();
+                TestJunk();
                 game.GameLoop();
-                game.Shutdown();                
+                game.Shutdown();
             }
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
@@ -68,6 +79,56 @@ namespace ZoneServer
 
         static void TestJunk()
         {
+
+            //hashstring: 72BDF6261A0B4EE38EC41C57AB6AAC25
+            //keystring: 0000000000000000000000000000000058E05DAD
+
+            //encrypted packet data: 3F003E00DB0200002667BF5F010028010000000000000000280100007 3B0330A3 1924FB87 38FDB7A3 FB7E6B0B A0ADA8BED DF1D113A 80B364929AA24715002ACF3D9F1A381B102F2D18F008B9AD2815
+            //[BLOCK: 0] :           3F003E00DB0200002667BF5F010028010000000000000000280100000 10428AF6 498804E7 38FDB7A3 FB7E6B0B A0ADA8BED DF1D113A 80B364929AA24715002ACF3D9F1A381B102F2D18F008B9AD2815
+            //[BLOCK: 2] :           3F003E00DB0200002667BF5F010028010000000000000000280100000 10428AF6 498804E4 F4749784 89F9CFDB A0ADA8BED DF1D113A 80B364929AA24715002ACF3D9F1A381B102F2D18F008B9AD2815
+            //[BLOCK: 4] :           3F003E00DB0200002667BF5F010028010000000000000000280100000 10428AF6 498804E4 F4749784 89F9CFD8 D2D8FEFD6 5E271F3A 80B364929AA24715002ACF3D9F1A381B102F2D18F008B9AD2815
+            //[BLOCK: 6] :           3F003E00DB0200002667BF5F010028010000000000000000280100000 10428AF6 498804E4 F4749784 89F9CFD8 D2D8FEFD6 5E271F12 74BEFC26799FF515002ACF3D9F1A381B102F2D18F008B9AD2815
+            //[BLOCK: 8] :           3F003E00DB0200002667BF5F010028010000000000000000280100000 10428AF6 498804E4 F4749784 89F9CFD8 D2D8FEFD6 5E271F12 74BEFC26799FF500000023ED01BD271B102F2D18F008B9AD2815
+            //[BLOCK: 10] :          3F003E00DB0200002667BF5F010028010000000000000000280100000 10428AF6 498804E4 F4749784 89F9CFD8 D2D8FEFD6 5E271F12 74BEFC26799FF500000023ED01BD27BA727F92EBB505C6AD2815
+                                   //3F003E00DB0200002667BF5F010028010000000000000000280100000 10428AF6 498804E4 F4749784 89F9CFD8 D2D8FEFD6 5E271F12 74BEFC26799FF500000023ED01BD27BA727F92EBB505C6AD2815
+            //byte[] responseData = Utility.StringToByteArray("0100000098020000672CBF5F00C91900FEFDC17779000000200000000A2E0100300001000000000044550000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000200970E41CBE8616ACEA95F9839B80D10000000057494E0001000101B751DEC81A5FF70D65298AF38FF99335");
+            //byte[] responseData = Utility.StringToByteArray("02000100230000008F28BF5F01C9190000000000000000002000000098C50558238A946B04A25B4846873FF50030620B1C1478C23E");
+            //int checksum = Utility.Checksum(responseData.Skip(0x1C).ToArray(),responseData.Length - (28 + 16), responseData.Skip(responseData.Length-16).ToArray());
+            int checksum = 0;
+            string packetbytes = "3F003E00DB0200002667BF5F0100280100000000000000002801000073B0330A31924FB8738FDB7A3FB7E6B0BA0ADA8BEDDF1D113A80B364929AA24715002ACF3D9F1A381B102F2D18F008B9AD2815";
+            byte[] packet = Utility.StringToByteArray(packetbytes);
+
+            string keybytes = "0000000000000000000000000000000058E05DAD";
+            byte[] key = Utility.StringToByteArray(keybytes);
+
+            Blowfish blowfish = new Blowfish();
+            Buffer.BlockCopy(key,0,blowfish.key,0,20);
+
+            byte[] hash = Crypto.SetupHashKey(key);
+
+            Crypto.BlowfishInitialize(hash, 16, ref blowfish.P, ref blowfish.S);
+
+            Crypto.DecryptPacket(blowfish, ref packet);
+
+            string decryptedstr = Utility.ByteArrayToString(packet,"").ToUpper();
+
+            checksum = Utility.Checksum(packet.Skip(0x1C).ToArray(), packet.Length - (28 + 16), packet.Skip(packet.Length - 16).ToArray());
+            if (checksum != 0)
+            {
+                Logger.Error("checksum fucked");
+            }
+            //UDPServer serv = new UDPServer(IPAddress.Parse("127.0.0.1"), 9999, MyCallback);
+
+            //serv.Start();
+
+            //UdpClient cli = new UdpClient();
+            //cli.Connect("localhost", 54231);
+            //cli.Send(Encoding.UTF8.GetBytes("test"), 4);
+
+            //UdpClient cli2 = new UdpClient();
+            //cli2.Connect("localhost", 54232);
+            //cli2.Send(Encoding.UTF8.GetBytes("test"), 4);
+
             //Logger.Write("Regular Log here");
             //Logger.Info("Cool information here");
             //Logger.Success("Successfully activated such and such");

@@ -70,6 +70,21 @@ namespace Toolbelt
             return decompress(data);
         }
 
+        public static int Checksum(byte[] data, int length, byte[] checkhash)
+        {
+            byte[] hash;
+            using (var md5 = MD5.Create())
+            {
+                md5.TransformFinalBlock(data, 0, length);
+                hash = md5.Hash;
+            }
+            
+            if (hash.SequenceEqual(checkhash))
+                return 0;
+            
+            return -1;
+        }
+
         public static bool BitfieldContains<T>(UInt32 field, T value)
         { 
             return (field & (uint)(object)value) != 0;

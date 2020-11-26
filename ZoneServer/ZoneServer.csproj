@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Networking\Networking.csproj" />
     <ProjectReference Include="..\Scripting\Scripting.csproj" />
   </ItemGroup>
 
