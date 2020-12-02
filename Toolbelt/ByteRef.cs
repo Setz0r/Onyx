@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Toolbelt;
 
-namespace Data
+namespace Toolbelt
 {
     public class ByteRef
     {
