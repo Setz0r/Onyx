@@ -15,7 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NetCoreServer" Version="3.0.21" />
     <PackageReference Include="NetMQ" Version="4.0.1.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Toolbelt\Toolbelt.csproj" />
   </ItemGroup>
 
 </Project>

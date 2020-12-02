@@ -31,7 +31,7 @@ namespace Data.DataChunks.Outgoing
                 data.Set<byte[]>(0x1E, Utility.Serialize(player.displayInfo));
                 data.Set<UInt32>(0x20, player.nameFlags.flags);                
                 byte dbyte = data.GetByte(0x21);
-                byte val21 = (byte)(dbyte | (byte)(player.Gender() * 128 + (1 << player.look.size)));
+                byte val21 = (byte)(dbyte | (byte)(player.Gender * 128 + (1 << player.look.size)));
                 data.Set<byte>(0x21, val21);
             }
 
