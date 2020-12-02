@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Ionic.Zlib;
 using System.Runtime.InteropServices;
 using Medallion;
 using BitStreams;
@@ -28,46 +27,6 @@ namespace Toolbelt
             path = Path.Combine(path, "Scripts");
             path = Path.Combine(path, script);
             return path;
-        }
-
-        public static byte[] Compress(byte[] data)
-        {
-            var compress = new Func<byte[], byte[]>(a => {
-                using (var ms = new System.IO.MemoryStream())
-                {
-                    using (var compressor =
-                           new Ionic.Zlib.ZlibStream(ms,
-                                                      CompressionMode.Compress,
-                                                      CompressionLevel.Default))
-                    {
-                        compressor.Write(a, 0, a.Length);
-                    }
-
-                    return ms.ToArray();
-                }
-            });
-
-            return compress(data);
-        }
-
-        public static byte[] Decompress(byte[] data)
-        {
-            var decompress = new Func<byte[], byte[]>(a => {
-                using (var ms = new System.IO.MemoryStream())
-                {
-                    using (var compressor =
-                           new Ionic.Zlib.ZlibStream(ms,
-                                                      CompressionMode.Decompress,
-                                                      CompressionLevel.Default))
-                    {
-                        compressor.Write(a, 0, a.Length);
-                    }
-
-                    return ms.ToArray();
-                }
-            });
-
-            return decompress(data);
         }
 
         public static int Checksum(byte[] data, int length, byte[] checkhash)
@@ -128,6 +87,14 @@ namespace Toolbelt
                              .ToArray();
         }
 
+        public static sbyte[] StringToSByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToSByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+
         public static string ByteArrayToString(byte[] ba, string Separator)
         {
             StringBuilder hex = new StringBuilder(ba.Length * 2);
@@ -140,6 +107,20 @@ namespace Toolbelt
         {
             return ByteArrayToString(ba, " ");
         }
+
+        public static string SByteArrayToString(sbyte[] ba, string Separator)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}{1}", b, Separator);
+            return hex.ToString();
+        }
+
+        public static string SByteArrayToString(sbyte[] ba)
+        {
+            return SByteArrayToString(ba, " ");
+        }
+
 
         public static string ReadCString(byte[] cString)
         {

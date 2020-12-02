@@ -446,5 +446,21 @@ namespace Toolbelt
                 Buffer.BlockCopy(BitConverter.GetBytes(b), 0, packet, posb, 4);
             }
         }
+
+        public static void EncryptPacket(Blowfish blowfish, ref byte[]packet, UInt32 packetsize)
+        {
+            UInt32 CypherSize = (uint)((packetsize / 4) & -2);
+
+            for (int i = 0; i < CypherSize; i += 2)
+            {
+                int posa = (i + 7) * 4;
+                int posb = (i + 8) * 4;
+                UInt32 a = BitConverter.ToUInt32(packet.Skip(posa).Take(4).ToArray());
+                UInt32 b = BitConverter.ToUInt32(packet.Skip(posb).Take(4).ToArray());
+                BlowfishEncipher(ref a, ref b, blowfish.P, blowfish.S);
+                Buffer.BlockCopy(BitConverter.GetBytes(a), 0, packet, posa, 4);
+                Buffer.BlockCopy(BitConverter.GetBytes(b), 0, packet, posb, 4);
+            }
+        }
     }
 }
