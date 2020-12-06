@@ -1,4 +1,6 @@
 ﻿using System;
+using DatabaseClient;
+using Toolbelt;
 
 namespace ConnectServer
 {
@@ -6,7 +8,9 @@ namespace ConnectServer
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Logger.SetLoggingLevel(Logger.LOGGINGLEVEL.ALL, "ConnectServer.log");
+            DBClient.TestSerialize();
+            Console.ReadKey();
         }
     }
 }

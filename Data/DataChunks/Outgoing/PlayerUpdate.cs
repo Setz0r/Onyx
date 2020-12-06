@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Data.Entities;
+using Data.Game.Entities;
 using Data.Game;
 using Toolbelt;
 
@@ -16,22 +16,22 @@ namespace Data.DataChunks.Outgoing
             size = 0x2E;
 
             // Base Data
-            byte[] baseData = Utility.Serialize(player.baseInfo);
+            byte[] baseData = Utility.Serialize(player.BaseInfo);
             data.Set<byte[]>(0x04, baseData);
 
-            if (player.baseInfo.updateMask.HasFlag(UPDATETYPE.MOVEMENT))
+            if (player.BaseInfo.UpdateMask.HasFlag(UPDATETYPE.MOVEMENT))
             {
                 // Movement Data
-                data.Set<byte[]>(0x0B, Utility.Serialize(player.moveInfo));
+                data.Set<byte[]>(0x0B, Utility.Serialize(player.MoveInfo));
             }
 
-            if (player.baseInfo.updateMask.HasFlag(UPDATETYPE.DISPLAY))
+            if (player.BaseInfo.UpdateMask.HasFlag(UPDATETYPE.DISPLAY))
             {
                 // Display Data
-                data.Set<byte[]>(0x1E, Utility.Serialize(player.displayInfo));
-                data.Set<UInt32>(0x20, player.nameFlags.flags);                
+                data.Set<byte[]>(0x1E, Utility.Serialize(player.DisplayInfo));
+                data.Set<UInt32>(0x20, player.NameFlags.flags);                
                 byte dbyte = data.GetByte(0x21);
-                byte val21 = (byte)(dbyte | (byte)(player.Gender * 128 + (1 << player.look.size)));
+                byte val21 = (byte)(dbyte | (byte)(player.Gender * 128 + (1 << player.Look.Size)));
                 data.Set<byte>(0x21, val21);
             }
 

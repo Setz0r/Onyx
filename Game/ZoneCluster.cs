@@ -1,5 +1,6 @@
-﻿using Data.Entities;
+﻿using Data.Game.Entities;
 using Data.Game;
+using Data.World;
 using Networking;
 using System;
 using System.Collections.Concurrent;
@@ -11,14 +12,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Toolbelt;
 
-namespace Data.World
+namespace Game
 {
     public class ZoneCluster
-    {
+    {        
         public ZoneCluster()
         {
             zones = new ConcurrentDictionary<ZONEID, Zone>();
             clients = new ConcurrentDictionary<EndPoint, ZONEID>();
+            
             zoneTasks = new List<Task>();
         }
 
@@ -47,7 +49,7 @@ namespace Data.World
         {
             foreach (var zone in zones)
             {
-                foreach (var player in zone.Value.players)
+                foreach (var player in zone.Value.Players)
                     player.Value.Save();
                 zone.Value.Shutdown();
             }
@@ -68,34 +70,31 @@ namespace Data.World
         {
             if (size > 0)
             {
+                Player player = null;
                 ZONEID playerZone = GetZoneIDByEndpoint(endpoint);
-
+                
                 if (playerZone == ZONEID.NONE)
                 {
+                    if (!clients.TryUpdate(endpoint, playerZone, ZONEID.NONE))
+                    {
+                        if (clients.TryAdd(endpoint, ZONEID.NONE)) { // temp
+                            player = new Player();
+                            player.Client = new UDPClient(server, endpoint);
+                        }
+                    }
                     // possible new connection
                     // @todo check database for endpoint/zone
-                    clients.TryAdd(endpoint, ZONEID.BASTOK_MARKETS); // temp
-
                 }
                 else
                 {
-                    Player player = GetPlayerByEndpoint(endpoint);
-                    if (player != null)
-                    {
-                        player.client.RecvData(buffer);
-                        //player.client.SendPacket(server, buffer.Skip(offset).Take(size).ToArray());
-                        return true;
-                    }
-                    else
+                    player = GetPlayerByEndpoint(endpoint);
+                    if (player == null)
                     {
                         player = zones[playerZone].InsertPlayer(server, endpoint);
 
-                        //player = InsertPlayer(server, endpoint);
                         if (player != null)
                         {
-                            ZONEID zoneId = ZONEID.BASTOK_MARKETS; // @todo: pull player zone location from database server
-                            clients.TryAdd(endpoint, zoneId);
-                            player.client.RecvData(buffer.Skip(offset).Take(size).ToArray());
+
                         }
                         //else
                         //{
@@ -103,6 +102,18 @@ namespace Data.World
                         //}
                     }
                 }
+
+                if (player != null)
+                {
+                    player.Client.RecvData(buffer.Skip(offset).Take(size).ToArray());
+                    UInt16 bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, this);
+                    if (bytesProcessed > 0)
+                    {
+                        player.Client.ResetBuffer();
+                    }
+                }
+
+                return true;
             }
             return false;
         }
@@ -114,7 +125,6 @@ namespace Data.World
             return ZONEID.NONE;
         }
 
-
         public Player GetPlayerByEndpoint(EndPoint ep)
         {
             if (clients.ContainsKey(ep))
@@ -122,17 +132,14 @@ namespace Data.World
                 ZONEID zoneId = clients[ep];
                 if (zones.ContainsKey(zoneId))
                 {
-
+                    var player = zones[zoneId].Players.FirstOrDefault(x => x.Value.Client.endpoint == ep);
+                    if (!player.Equals(default(KeyValuePair<uint, Player>)))
+                        return player.Value;
                 }
-                //if (players.ContainsKey(playerID))
-                //    return players[playerID];
-                //else
-                //    clients.TryRemove(ep, out playerID);
             }
 
             return null;
         }
-
 
         public UDPServer server;
         public string host;
