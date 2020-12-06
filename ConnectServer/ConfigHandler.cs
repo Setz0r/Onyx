@@ -9,6 +9,7 @@ namespace ConnectServer
         public string ClientVersion;
         public int VersionLock;
     }
+
     public struct MysqlConfiguration
     {
         public string Host;
@@ -17,16 +18,19 @@ namespace ConnectServer
         public string Password;
         public string Database;
     }
+
     public struct DatabaseConfiguration
     {
         public MysqlConfiguration Lobby;
         public MysqlConfiguration Search;
         public MysqlConfiguration Map;
     }
+
     public struct MaintenanceConfiguration
     {
         public int MaintMode;
     }
+
     public struct LoginConfiguration
     {
         public string TimestampFormat;
@@ -44,6 +48,7 @@ namespace ConnectServer
         public int MsgServerPort;
         public bool LogUserIP;
     }
+
     public static class ConfigHandler
     {
         public static Dictionary<string, string> versionConfig;
@@ -197,15 +202,17 @@ namespace ConnectServer
                 LoginConfig.LogUserIP = Convert.ToBoolean(loginConfig["log_user_ip"]);
             }
         }
+        
         public static void ReadConfigs()
         {
-            versionConfig = Utility.ReadConf(@"version.info");
+            versionConfig = Utility.ReadConf(@"conf/version.info");
+
             ParseVersionConfig();
             maintConfig = Utility.ReadConf(@"conf/maint.conf");
             ParseMaintConfig();
             databaseConfig = Utility.ReadConf(@"conf/mysql_config.conf");
             ParseDatabaseConfig();
-            loginConfig = Utility.ReadConf(@"conf/login_darkstar.conf");
+            loginConfig = Utility.ReadConf(@"conf/login.conf");
             ParseLoginConfig();
         }
     }
