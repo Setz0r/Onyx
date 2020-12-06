@@ -3,16 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Data.Entities
+namespace Data.Game.Entities
 {
     public class Npc : Combat
     {
         public Npc()
         {
-            type = ENTITYTYPE.NPC;
-            animationSub = 0;
+            EntityType = ENTITYTYPE.NPC;
+            AnimationSub = 0;
         }
 
-        public byte animationSub;
+        public byte AnimationSub;
     }
 }

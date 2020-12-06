@@ -14,10 +14,11 @@ namespace Networking
     public class UDPClient
     {
         private UDPServer server;
-        private EndPoint endpoint;
-        private UInt32 lastDataTime = 0;
+        private UInt32 lastDataTime;
+        public EndPoint endpoint;
         public byte[] dataBuffer;
-        public int bufferSize;        
+        public int bufferSize;
+        public Blowfish blowfish;
 
         public UDPClient(UDPServer serv, EndPoint ep)
         {
@@ -25,28 +26,36 @@ namespace Networking
             endpoint = ep;
             dataBuffer = new byte[4096];
             bufferSize = 0;
+            lastDataTime = 0;
         }
-        public int TrimData(int size)
+
+        public void SetBlowfishKey(byte[] key)
         {
-            dataBuffer = dataBuffer.Skip(size).Take(4096 - size).ToArray();
-            bufferSize = Math.Max(bufferSize - size, 0);
-            return bufferSize;
+            blowfish = new Blowfish();
+            Buffer.BlockCopy(key, 0, blowfish.key, 0, 20);
+        }
+
+        public void ResetBuffer()
+        {
+            dataBuffer = new byte[4096];
+            bufferSize = 0;
         }
 
         public int RecvData(byte[] data)
         {
-            if (data.Length + bufferSize > 4096)
+            if (data.Length > 4096)
             {
                 Logger.Error("Client data buffer maximum size breeched.");
             }
             else
             {
-                data.CopyTo(dataBuffer, bufferSize);
-                bufferSize += data.Length;
+                data.CopyTo(dataBuffer, 0);
+                bufferSize = data.Length;
             }
-            return bufferSize;
+            lastDataTime = Utility.Timestamp();
+            return 0;
         }
-        
+
         public int SendPacket(UDPServer server, byte[] data)
         {
             int bytesSent = 0;

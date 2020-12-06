@@ -1,4 +1,4 @@
-﻿using Data.Entities;
+﻿using Data.Game.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -25,28 +25,28 @@ namespace Data.World
     {
         public Zone(ZONEID zoneId)
         {
-            id = zoneId;
+            ZoneId = zoneId;
         }
 
         public bool Initialize()
         {
             // @TODO: load zone details from database server
-            players = new ConcurrentDictionary<uint, Player>();
-            npcs = new ConcurrentDictionary<uint, Npc>();
+            Players = new ConcurrentDictionary<uint, Player>();
+            Npcs = new ConcurrentDictionary<uint, Npc>();
 
-            Logger.Info("Zone loaded: {0}", new object[] { (int)id });
+            Logger.Info("Zone loaded: {0}", new object[] { (int)ZoneId });
             return true;
         }
 
         public bool Shutdown()
         {
-            Logger.Info("Zone {0} shutting down", new object[] { (int) id });
+            Logger.Info("Zone {0} shutting down", new object[] { (int)ZoneId });
             Thread.Sleep(3000);
-            foreach (var player in players)
+            foreach (var player in Players)
             {
                 player.Value.Save();
             }            
-            Logger.Info("Zone {0} successfully shutdown", new object[] { (int)id });
+            Logger.Info("Zone {0} successfully shutdown", new object[] { (int)ZoneId });
             return true;
         }
 
@@ -57,9 +57,9 @@ namespace Data.World
 
         public Player GetPlayerByID(UInt32 playerID)
         {
-            if (players.ContainsKey(playerID))
+            if (Players.ContainsKey(playerID))
             {
-                return players[playerID];
+                return Players[playerID];
             }
             return null;
         }
@@ -68,34 +68,34 @@ namespace Data.World
         {
             Player player = new Player
             {
-                client = new UDPClient(serv, ep),
-                status = ENTITYSTATUS.NORMAL,
-                playerStatus = PLAYERSTATUS.REQUESTING_ZONE
+                Client = new UDPClient(serv, ep),
+                Status = ENTITYSTATUS.NORMAL,
+                PlayerStatus = PLAYERSTATUS.REQUESTING_ZONE
             };
 
             //@todo load player from dbserver
             Random rand = new Random();
-            if (players.TryAdd(12345 + (uint)rand.Next(0, 1000000), player))
+            if (Players.TryAdd(12345 + (uint)rand.Next(0, 1000000), player))
             {
-                Logger.Success("Player connected to Zone ID: {0} ", new object[] { (int)id });
+                Logger.Success("Player connected to Zone ID: {0} ", new object[] { (int)ZoneId });
             }
             else
             {
-                Logger.Warning("Player attempted to connect to Zone ID {0} when already in zone", new object[] { (int)id });
+                Logger.Warning("Player attempted to connect to Zone ID {0} when already in zone", new object[] { (int)ZoneId });
                 return null;
             }
             return player;
         }
 
-        public ZONEID id;
-        public string name;
-        public ZONETYPE type;
+        public ZONEID ZoneId;
+        public string Name;
+        public ZONETYPE ZoneType;
 
-        public REGION region;
-        public CONTINENT continent;
-        public WeatherInfo weather;
+        public REGION Region;
+        public CONTINENT Continent;
+        public WeatherInfo Weather;
 
-        public ConcurrentDictionary<UInt32, Player> players;
-        public ConcurrentDictionary<UInt32, Npc> npcs;
+        public ConcurrentDictionary<UInt32, Player> Players;
+        public ConcurrentDictionary<UInt32, Npc> Npcs;
     }
 }
