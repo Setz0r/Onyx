@@ -1,4 +1,8 @@
 ﻿using System;
+using DatabaseClient;
+using Servers;
+using Toolbelt;
+using static Toolbelt.Logger;
 
 namespace ConnectServer
 {
@@ -6,7 +10,23 @@ namespace ConnectServer
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Logger.SetLoggingLevel(LOGGINGLEVEL.ALL, "ConnectServer.log");
+
+            ConfigHandler.ReadConfigs();
+
+            SessionHandler.Initialize();
+            Logger.Info("Session Handler Initialized");
+
+            //@TODO: change how configurations are loaded
+            AuthServer.Initialize(ConfigHandler.LoginConfig.LoginAuthIP, ConfigHandler.LoginConfig.LoginAuthPort);
+            Logger.Info("Auth Server Initialized");
+            ViewServer.Initialize(ConfigHandler.LoginConfig.LoginViewIP, ConfigHandler.LoginConfig.LoginViewPort);
+            Logger.Info("View Server Initialized");
+            DataServer.Initialize(ConfigHandler.LoginConfig.LoginDataIP, ConfigHandler.LoginConfig.LoginDataPort);
+            Logger.Info("Data Server Initialized");
+
+            DBClient.TestSerialize();
+            Console.ReadKey();
         }
     }
 }
