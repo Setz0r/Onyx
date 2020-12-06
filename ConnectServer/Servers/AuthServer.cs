@@ -30,7 +30,7 @@ namespace Servers
 
         private static bool IsIPBanned(string IP)
         {
-            //@todo: handle ip ban check
+            // TODO: handle ip ban check
             return false;
             //return MySQL.CheckIPBanned(IP);
         }
@@ -74,20 +74,20 @@ namespace Servers
                 }
                 else
                 {
-                    //@todo: sanitize username and password
+                    // TODO: sanitize username and password
                     
-                    //@todo: check to see if account locked out
+                    // TODO: check to see if account locked out
 
                     if (Action == (byte)LOGINRESULT.ATTEMPT)
                     {
-                        //@todo: get account from database
+                        // TODO: get account from database
                         LoginAccount account = new LoginAccount();//MySQL.GetAccount(Username);
 
-                        //@todo: verify login and return account id
+                        // TODO: verify login and return account id
                         uint AccountID = 1; // MySQL.VerifyLogin(Username, Password);
                         if (AccountID >= 1000)
                         {
-                            //@todo: handle maintenance mode and gm accounts
+                            // TODO: handle maintenance mode and gm accounts
                             if (ConfigHandler.MaintConfig.MaintMode > 0) // && !MySQL.IsGMAccount(AccountID))
                             {
                                 response.Fill(0, 0x00, 33);
@@ -99,15 +99,15 @@ namespace Servers
                                 {
                                     Success = 0;
 
-                                    //@todo: might want to see about killing the other logged in session, but we'll see if it's necessary
+                                    // TODO: might want to see about killing the other logged in session, but we'll see if it's necessary
 
                                 }
                                 else
                                 {
-                                    //@todo: reset accounts last modification date
+                                    // TODO: reset accounts last modification date
                                     //MySQL.ResetAccountLastModify(AccountID);
 
-                                    //@todo: apparently DSP's login server sends a MSG_LOGIN to the server, but it's currently defunct in the gameservers msg handler
+                                    // TODO: apparently DSP's login server sends a MSG_LOGIN to the server, but it's currently defunct in the gameservers msg handler
 
                                     client.Session.Account_id = AccountID;
                                     client.Session.Session_hash = Utility.GenerateSessionHash(AccountID, Username);
@@ -128,7 +128,7 @@ namespace Servers
                         {
                             if (account != null && account.Locked)
                             {
-                                // @todo: increment attempts in accounts table
+                                //  TODO: increment attempts in accounts table
                                 //uint newLockTime = 0;
                                 //if (attempts + 1 >= 20) newLockTime = 172800; // 48 hours
                                 //else if (attempts + 1 == 10) newLockTime = 3600; // 1 hour
@@ -148,14 +148,14 @@ namespace Servers
                         response.Resize(1);
                         if (ConfigHandler.MaintConfig.MaintMode == 0)
                         {
-                            //@todo: check if account exists in database
+                            // TODO: check if account exists in database
                             bool accountexists = false;
                             if (accountexists) //!MySQL.AccountExists(Username))
                             {
-                                //@todo: get next account id from database
+                                // TODO: get next account id from database
                                 uint AccountID = 1; // MySQL.GetNextAccountID();
                                 
-                                //@todo: create account in database
+                                // TODO: create account in database
                                 if (AccountID==1) //MySQL.CreateAccount(AccountID, Username, Password, ACCOUNTSTATUS.NORMAL, Privilege.USER) == -1)
                                 {
                                     response.Set<byte>(0, LOGINRESULT.ERROR_CREATE);

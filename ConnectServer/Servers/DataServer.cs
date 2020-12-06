@@ -116,7 +116,7 @@ namespace Servers
 
                         int j = 0;
 
-                        //@todo: get character list from database
+                        // TODO: get character list from database
                         List<LoginCharacter> CharacterList = new List<LoginCharacter>(); // MySQL.GetChars(client.Session.Account_id, ContentIDCount);
                         client.Session.Char_id_list = new List<uint>();
                         client.Session.Char_id_list.Clear();
@@ -195,7 +195,7 @@ namespace Servers
                     uint charid = client.Session.Char_id;
                     if (client.Session.Char_id_list.Contains(charid))
                     {
-                        //@todo: get character from database
+                        // TODO: get character from database
                         ZoneChar zoneChar = new ZoneChar(); // MySQL.GetZoneChar(charid);
                         if (zoneChar != null) {
 
@@ -204,26 +204,26 @@ namespace Servers
 
                             if (ConfigHandler.MaintConfig.MaintMode == 0 || zoneChar.Gm_level > 0)
                             {
-                                //@todo: handle session clearing 
+                                // TODO: handle session clearing 
                                 //MySQL.ClearAccountSession(zoneChar.Account_id);
 
-                                //@todo: update characters previous zone
+                                // TODO: update characters previous zone
                                 //if (zoneChar.Prev_zone == 0)
                                 //    MySQL.UpdateCharPrevZone(charid, zoneChar.Zone_id);
 
-                                //@todo: validate session for character
+                                // TODO: validate session for character
                                 bool accountValidated = true;
                                 if (accountValidated) // !MySQL.ValidAccountSession(zoneChar.Account_id))
                                 {
                                     string sessionKey = Utility.ByteArrayToString(key3.Get(), "");
 
                                     client.Session.Session_key = sessionKey;
-                                    //@todo: create account session
+                                    // TODO: create account session
                                     //MySQL.CreateAccountSession(zoneChar, charid, client.Session.Ip_address, sessionKey, client.Session.Version_mismatch);
 
                                     if (ConfigHandler.LoginConfig.LogUserIP == true)
                                     {
-                                        //@todo: handle ip logging
+                                        // TODO: handle ip logging
                                         //MySQL.CreateIPRecord(zoneChar, charid, client.Session.Ip_address, client.Session.Mac_address);
                                     }
 

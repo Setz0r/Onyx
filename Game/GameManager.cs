@@ -49,7 +49,7 @@ namespace Game
         public void Initialize()
         {            
             Logger.Info("Initializing Game Manager");
-            // @todo: initialize here
+            //  TODO: initialize here
             LoadZoneClusters();
             clusterTasks = new List<Task>();
             foreach (var cluster in clusters)

@@ -30,7 +30,7 @@ namespace Data.World
 
         public bool Initialize()
         {
-            // @TODO: load zone details from database server
+            //  TODO: load zone details from database server
             Players = new ConcurrentDictionary<uint, Player>();
             Npcs = new ConcurrentDictionary<uint, Npc>();
 

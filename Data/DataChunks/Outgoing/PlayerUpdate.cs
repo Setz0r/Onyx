@@ -54,7 +54,7 @@ namespace Data.DataChunks.Outgoing
             //{
             //    data.SetVal(0x5A, Utility.MaxStr(player.name, 16));
             //    //int sizeAdd = player.name.Length - 2
-            //    //@todo: lookup Finalize
+            //    // TODO: lookup Finalize
             //}
 
             Complete();

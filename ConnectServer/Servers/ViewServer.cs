@@ -75,10 +75,10 @@ namespace Servers
                     break;
             }
 
-            //@todo: get next char id in list
+            // TODO: get next char id in list
             uint CharID = 1; // MySQL.GetNextCharID();
 
-            //@todo: create character in database
+            // TODO: create character in database
             
             if (CharID == 1) { } //delete this
             //if (MySQL.CreateChar(accountID, CharID, createChar) == -1)
@@ -247,7 +247,7 @@ namespace Servers
 
                         client.Session.ViewSend(ReservePacket14.Get());
 
-                        //@todo: add character deletion
+                        // TODO: add character deletion
                         //MySQL.DeleteChar(client.Session.Account_id, charid);
                     }
                     else
@@ -289,7 +289,7 @@ namespace Servers
                         NameBuf.BlockCopy(recv.At(32), 0, 15);                        
                         string CharName = Utility.ReadCString(NameBuf.Get());
 
-                        //@todo: check if character name available
+                        // TODO: check if character name available
                         if (!Regex.IsMatch(CharName, @"^[a-zA-Z]+$") || SessionHandler.CharNameExists(CharName)) // || !MySQL.CharacterNameAvailable(CharName))
                         {
                             ReservePacket22.BlockCopy(lobbyErrorData, 0, sendSize);

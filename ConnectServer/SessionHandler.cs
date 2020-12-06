@@ -36,7 +36,7 @@ namespace ConnectServer
 
         public static bool AlreadyLoggedIn(uint accountID)
         {
-            //@todo: check if player already logged in
+            // TODO: check if player already logged in
             List<LoginSession> sessions = new List<LoginSession>(); //MySQL.GetAccountsSessions();
 
             bool SessionInDB = sessions.Exists(x => x.Account_id == accountID);

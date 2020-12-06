@@ -44,7 +44,7 @@ namespace Data.DataChunks.Incoming
     {
         public bool Validator(ZoneConnectData data)
         {
-            if (data.id > 65535 ) // @todo: validate player id exists and is currently logged in
+            if (data.id > 65535 ) //  TODO: validate player id exists and is currently logged in
                 return false;
 
             Logger.Success("we got a fucking 0x0A");

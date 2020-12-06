@@ -17,7 +17,7 @@ namespace ConnectServer
             SessionHandler.Initialize();
             Logger.Info("Session Handler Initialized");
 
-            //@TODO: change how configurations are loaded
+            // TODO: change how configurations are loaded
             AuthServer.Initialize(ConfigHandler.LoginConfig.LoginAuthIP, ConfigHandler.LoginConfig.LoginAuthPort);
             Logger.Info("Auth Server Initialized");
             ViewServer.Initialize(ConfigHandler.LoginConfig.LoginViewIP, ConfigHandler.LoginConfig.LoginViewPort);
