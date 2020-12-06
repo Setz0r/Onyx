@@ -3,7 +3,6 @@ using DatabaseClient;
 using Servers;
 using Toolbelt;
 using static Toolbelt.Logger;
-using Toolbelt;
 
 namespace ConnectServer
 {
