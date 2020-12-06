@@ -1,4 +1,4 @@
-﻿using Data.Entities;
+﻿using Data.Game.Entities;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;

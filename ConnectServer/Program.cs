@@ -3,6 +3,7 @@ using DatabaseClient;
 using Servers;
 using Toolbelt;
 using static Toolbelt.Logger;
+using Toolbelt;
 
 namespace ConnectServer
 {
@@ -24,6 +25,8 @@ namespace ConnectServer
             Logger.Info("View Server Initialized");
             DataServer.Initialize(ConfigHandler.LoginConfig.LoginDataIP, ConfigHandler.LoginConfig.LoginDataPort);
             Logger.Info("Data Server Initialized");
+
+            Logger.SetLoggingLevel(Logger.LOGGINGLEVEL.ALL, "ConnectServer.log");
 
             DBClient.TestSerialize();
             Console.ReadKey();

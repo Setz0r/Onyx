@@ -239,5 +239,34 @@ namespace Toolbelt
             confData = validLines.ToDictionary(c => c.Split(new[] { ':' }, 2)[0].Trim(), c => c.Split(new[] { ':' }, 2)[1].Trim());
             return confData;
         }
+
+        public static UInt32 Timestamp()
+        {
+            return (UInt32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        }
+
+        public static byte[] GetUInt32Bytes(uint value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            return bytes;
+        }
+
+        public static byte[] GetInt32Bytes(int value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            return bytes;
+        }
+
+        public static byte[] GetUInt16Bytes(ushort value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            return bytes;
+        }
+
+        public static byte[] GetInt16Bytes(short value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            return bytes;
+        }
     }
 }

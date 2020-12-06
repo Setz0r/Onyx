@@ -380,7 +380,7 @@ namespace Toolbelt
                 data = 0;
                 for (k = 0; k < 4; ++k)
                 {
-                    data = (uint)((data << 8) | key[j]);
+                    data = (uint)((data << 8) | (byte)key[j]);
                     j += 1;
                     if (j >= keybytes)
                     {

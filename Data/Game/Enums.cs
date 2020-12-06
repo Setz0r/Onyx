@@ -29,6 +29,7 @@ namespace Data.Game
         SHUTDOWN         = STATUS_04 | STATUS_10
     }
 
+    [Flags]
     public enum ENTITYTYPE : byte
     {
         NONE             = 0x00,
@@ -491,5 +492,5 @@ namespace Data.Game
         BATTLEFIELD = 4,
         DYNAMIS = 5,
         INSTANCED = 6
-    }
+    }    
 }

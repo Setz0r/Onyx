@@ -278,10 +278,27 @@ namespace Toolbelt
             Encoding.ASCII.GetBytes(value).CopyTo(_bytes, index);
         }
 
+        public byte[] Append(byte[] data)
+        {
+            int length = _bytes.Length;
+            ByteRef temp = new ByteRef(_bytes);
+            _bytes = new byte[length + data.Length];
+            Set<byte[]>(0, temp.Get());
+            Set<byte[]>(temp.Length, data);
+            return _bytes;
+        }
+
         public byte GetByte(int index)
         {
             byte value = _bytes[index];
             return value;
+        }
+
+        public byte[] GetBytes(int index, int count)
+        {
+            if (index + count <= _bytes.Length)
+                return _bytes.Skip(index).Take(count).ToArray();
+            return null;
         }
 
         public short GetInt16(int index)

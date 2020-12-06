@@ -1,4 +1,5 @@
-﻿using Data.World;
+﻿using Data.Game;
+using Data.World;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Toolbelt;
 
-namespace Data.Game
+namespace Game
 {
     public class GameManager
     {

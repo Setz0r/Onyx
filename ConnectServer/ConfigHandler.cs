@@ -206,6 +206,7 @@ namespace ConnectServer
         public static void ReadConfigs()
         {
             versionConfig = Utility.ReadConf(@"conf/version.info");
+
             ParseVersionConfig();
             maintConfig = Utility.ReadConf(@"conf/maint.conf");
             ParseMaintConfig();

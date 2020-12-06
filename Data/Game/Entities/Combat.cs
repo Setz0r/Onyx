@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Data.Entities
+namespace Data.Game.Entities
 {    
     public struct HealthInfo
     {

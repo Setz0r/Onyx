@@ -16,4 +16,14 @@
     <OutputPath>$(SolutionDir)\Release</OutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.12.0-beta1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseClient\DatabaseClient.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Networking\Networking.csproj" />
+  </ItemGroup>
+
 </Project>

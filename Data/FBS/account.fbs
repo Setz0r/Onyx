@@ -1,0 +1,15 @@
+﻿namespace Data.FBObjects;
+
+table FBAccount {
+  id:uint;
+  username:string;
+  password:string;
+  email:string;
+  timecreate:uint;
+  status:ubyte;
+  loginattempts:ushort;
+  lockouttime:uint;
+  contentids:ubyte;
+}
+
+root_type FBAccount;
