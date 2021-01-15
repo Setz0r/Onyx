@@ -116,32 +116,18 @@ namespace Servers
                         session.Status = SESSIONSTATUS.CHARSELECT;
 
                         string clientVersionStr = recv.GetString(0x74, 6);
-                        string expectedVersionStr = ConfigHandler.VersionConfig.ClientVersion.Substring(0, 6);
+                        // TODO: Get version from yaml config file. -- This is Edens Version
+                        string expectedVersionStr = "30190305_0".Substring(0, 6);
 
                         uint clientVersion = Convert.ToUInt32(clientVersionStr);
                         uint expectedVersion = Convert.ToUInt32(expectedVersionStr);
 
                         bool versionMismatch = clientVersion != expectedVersion;
-
                         bool fatalMismatch = false;
 
                         if (versionMismatch)
                         {
-                            switch (ConfigHandler.VersionConfig.VersionLock)
-                            {
-                                case 1:
-                                    if (expectedVersion < clientVersion)
-                                    {
-                                        fatalMismatch = true;
-                                    }
-                                    break;
-                                case 2:
-                                    if (expectedVersion > clientVersion)
-                                    {
-                                        fatalMismatch = true;
-                                    }
-                                    break;
-                            }
+                            fatalMismatch = true;
                         }
 
                         if (fatalMismatch)
@@ -278,29 +264,22 @@ namespace Servers
                 case 0x22: // Create a Character - Validate
                     sendSize = 0x24;
                     ByteRef ReservePacket22 = new ByteRef(sendSize);
-                    if (ConfigHandler.MaintConfig.MaintMode > 0)
+
+                    ByteRef NameBuf = new ByteRef(15);
+                    NameBuf.BlockCopy(recv.At(32), 0, 15);                        
+                    string CharName = Utility.ReadCString(NameBuf.Get());
+
+                    // TODO: check if character name available
+                    if (!Regex.IsMatch(CharName, @"^[a-zA-Z]+$") || SessionHandler.CharNameExists(CharName)) // || !MySQL.CharacterNameAvailable(CharName))
                     {
-                        ReservePacket22.BlockCopy(lobbyErrorData, 0, 0x24);
-                        ReservePacket22.Set<ushort>(32, 314);
+                        ReservePacket22.BlockCopy(lobbyErrorData, 0, sendSize);
+                        ReservePacket22.Set<ushort>(32, 313);
                     }
                     else
                     {
-                        ByteRef NameBuf = new ByteRef(15);
-                        NameBuf.BlockCopy(recv.At(32), 0, 15);                        
-                        string CharName = Utility.ReadCString(NameBuf.Get());
-
-                        // TODO: check if character name available
-                        if (!Regex.IsMatch(CharName, @"^[a-zA-Z]+$") || SessionHandler.CharNameExists(CharName)) // || !MySQL.CharacterNameAvailable(CharName))
-                        {
-                            ReservePacket22.BlockCopy(lobbyErrorData, 0, sendSize);
-                            ReservePacket22.Set<ushort>(32, 313);
-                        }
-                        else
-                        {
-                            client.Session.Char_name = CharName;
-                            sendSize = 0x20;
-                            ReservePacket22.BlockCopy(lobbyActionDone, 0, sendSize);
-                        }
+                        client.Session.Char_name = CharName;
+                        sendSize = 0x20;
+                        ReservePacket22.BlockCopy(lobbyActionDone, 0, sendSize);
                     }
 
                     MD5 md5Hash22 = MD5.Create();

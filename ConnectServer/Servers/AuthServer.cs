@@ -88,12 +88,8 @@ namespace Servers
                         if (AccountID >= 1000)
                         {
                             // TODO: handle maintenance mode and gm accounts
-                            if (ConfigHandler.MaintConfig.MaintMode > 0) // && !MySQL.IsGMAccount(AccountID))
-                            {
-                                response.Fill(0, 0x00, 33);
-                                Success = 0;
-                            }
-                            else if (account.Status.HasFlag(ACCOUNTSTATUS.NORMAL))
+
+                            if (account.Status.HasFlag(ACCOUNTSTATUS.NORMAL))
                             {
                                 if (SessionHandler.AlreadyLoggedIn(AccountID))
                                 {
@@ -146,37 +142,36 @@ namespace Servers
                     else if (Action == (byte)LOGINRESULT.CREATE)
                     {
                         response.Resize(1);
-                        if (ConfigHandler.MaintConfig.MaintMode == 0)
-                        {
-                            // TODO: check if account exists in database
-                            bool accountexists = false;
-                            if (accountexists) //!MySQL.AccountExists(Username))
-                            {
-                                // TODO: get next account id from database
-                                uint AccountID = 1; // MySQL.GetNextAccountID();
-                                
-                                // TODO: create account in database
-                                if (AccountID==1) //MySQL.CreateAccount(AccountID, Username, Password, ACCOUNTSTATUS.NORMAL, Privilege.USER) == -1)
-                                {
-                                    response.Set<byte>(0, LOGINRESULT.ERROR_CREATE);
-                                    Success = 0;
-                                }
-                                else
-                                {
-                                    response.Set<byte>(0, LOGINRESULT.SUCCESS_CREATE);
-                                    Success = 1;
-                                }
-                            }
-                            else
-                            {
-                                response.Set<byte>(0, LOGINRESULT.ERROR_CREATE);
-                                Success = 0;
-                            }
-                        } else
-                        {
-                            response.Set<byte>(0, LOGINRESULT.ERROR);
-                            Success = 0;
-                        }
+                        // TODO: Check to see if this is needed.
+                        //if (ConfigHandler.MaintConfig.MaintMode == 0)
+                        //{
+                        //    // TODO: check if account exists in database
+                        //    bool accountexists = false;
+                        //    if (accountexists) //!MySQL.AccountExists(Username))
+                        //    {
+                        //        // TODO: get next account id from database
+                        //        uint AccountID = 1; // MySQL.GetNextAccountID();
+                        //        
+                        //        // TODO: create account in database
+                        //        if (AccountID==1) //MySQL.CreateAccount(AccountID, Username, Password, ACCOUNTSTATUS.NORMAL, Privilege.USER) == -1)
+                        //        {
+                        //            response.Set<byte>(0, LOGINRESULT.ERROR_CREATE);
+                        //            Success = 0;
+                        //        }
+                        //        else
+                        //        {
+                        //            response.Set<byte>(0, LOGINRESULT.SUCCESS_CREATE);
+                        //            Success = 1;
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        response.Set<byte>(0, LOGINRESULT.ERROR_CREATE);
+                        //        Success = 0;
+                        //    }
+                        //} else
+                        response.Set<byte>(0, LOGINRESULT.ERROR);
+                        Success = 0;
                     }
                 }
             }

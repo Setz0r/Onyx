@@ -102,7 +102,8 @@ namespace Servers
                         CharList.Set<uint>(28, ContentIDCount);                     // content id count
 
                         // Server name in the lobby menu
-                        ReserveDataA1.Set<string>(60, ConfigHandler.LoginConfig.ServerName);  // server name
+                        // TODO: Have server name come from config.
+                        ReserveDataA1.Set<string>(60, "Onyx"); // Server name
 
                         // Prepare char list data
                         for (int i = 0; i < 16; ++i)
@@ -122,7 +123,7 @@ namespace Servers
                         client.Session.Char_id_list.Clear();
                         foreach (LoginCharacter C in CharacterList)
                         {
-                            if (ConfigHandler.MaintConfig.MaintMode == 0 || C.GMLevel > 0)
+                            if (C.GMLevel > 0)
                             {
                                 // Add character id to session valid char id list
                                 client.Session.Char_id_list.Add(C.ID);
@@ -156,7 +157,7 @@ namespace Servers
                         }
 
                         md5Hash = MD5.Create();                        
-                        if (ConfigHandler.MaintConfig.MaintMode > 0 && j == 0)
+                        if (j == 0)
                         {
                             SendLobbyError(client);
                         }
@@ -202,7 +203,7 @@ namespace Servers
                             if (zoneChar.Prev_zone == 0)
                                 key3.Set<byte>(16, key3.GetByte(16) + 6);
 
-                            if (ConfigHandler.MaintConfig.MaintMode == 0 || zoneChar.Gm_level > 0)
+                            if (zoneChar.Gm_level > 0)
                             {
                                 // TODO: handle session clearing 
                                 //MySQL.ClearAccountSession(zoneChar.Account_id);
@@ -221,17 +222,14 @@ namespace Servers
                                     // TODO: create account session
                                     //MySQL.CreateAccountSession(zoneChar, charid, client.Session.Ip_address, sessionKey, client.Session.Version_mismatch);
 
-                                    if (ConfigHandler.LoginConfig.LogUserIP == true)
-                                    {
-                                        // TODO: handle ip logging
-                                        //MySQL.CreateIPRecord(zoneChar, charid, client.Session.Ip_address, client.Session.Mac_address);
-                                    }
+
+                                    // -- TODO: Handle IP Logging
 
                                     ReserveDataA2.Set<uint>(0x38, zoneChar.Zone_ip);     // server IP integer
                                     ReserveDataA2.Set<ushort>(0x3C, zoneChar.Zone_port); // server port
 
                                     ReserveDataA2.Set<uint>(0x40, client.Session.Server_ip);  // search server IP integer                    
-                                    ReserveDataA2.Set<uint>(0x44, ConfigHandler.LoginConfig.SearchServerPort);       // search server port
+                                    ReserveDataA2.Set<uint>(0x44, 54002); // searh server port
 
                                     MainReserveData.BlockCopy(ReserveDataA2, 0, 0x48);
 
