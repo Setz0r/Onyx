@@ -70,6 +70,8 @@ namespace Data.World
 
         public Player InsertPlayer(UDPServer serv, EndPoint ep)
         {
+            // TODO: load player from dbserver
+
             Player player = new Player
             {
                 Client = new UDPClient(serv, ep),
@@ -77,9 +79,8 @@ namespace Data.World
                 PlayerStatus = PLAYERSTATUS.REQUESTING_ZONE
             };
 
-            //@todo load player from dbserver
             Random rand = new Random();
-            if (Players.TryAdd(12345 + (uint)rand.Next(0, 1000000), player))
+            if (Players.TryAdd(1002, player))
             {
                 Logger.Success("Player connected to Zone ID: {0} ", new object[] { (int)ZoneId });
             }

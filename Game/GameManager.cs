@@ -92,7 +92,7 @@ namespace Game
                 }
                 Thread.Sleep(1000); // Prevent CPU overload
                 int number = Process.GetCurrentProcess().Threads.Count;
-                Logger.Info("Threads in Use: {0}", new object[] { number });
+                //Logger.Info("Threads in Use: {0}", new object[] { number });
             }
         }
 

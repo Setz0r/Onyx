@@ -44,7 +44,7 @@ namespace Data.Game.Entities
     }
 
     [Serializable]
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    [StructLayout(LayoutKind.Explicit, Size=18, Pack = 1)]
     public class MovementInfo
     {
         [FieldOffset(0)]

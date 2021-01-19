@@ -22,21 +22,22 @@ namespace ZoneServer
                 if (File.Exists(ConfigurationFile))
                 {
                     Configuration = Utility.ReadConf(ConfigurationFile);
+                    foreach (var config in Configuration)
+                    {
+                        switch (config.Key)
+                        {
+                            case "Logging":
+                                LOGGINGLEVEL logLevel = (LOGGINGLEVEL)Convert.ToUInt16(config.Value);
+                                Logger.SetLoggingLevel(logLevel);
+                                break;
+                        }
+                    }
                 }
                 else
                 {
                     Logger.Warning("Zone server configuration file missing");
                 }
-                foreach (var config in Configuration)
-                {
-                    switch (config.Key)
-                    {
-                        case "Logging":
-                            LOGGINGLEVEL logLevel = (LOGGINGLEVEL)Convert.ToUInt16(config.Value);
-                            Logger.SetLoggingLevel(logLevel);
-                            break;
-                    }
-                }
+
             }
             catch (Exception e)
             {

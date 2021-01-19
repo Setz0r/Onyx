@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Data.OnyxMath
 {
-    [StructLayout(LayoutKind.Explicit)]
-    public class OnyxVec3
+    [StructLayout(LayoutKind.Explicit, Size=12, Pack=1)]
+    public struct OnyxVec3
     {
         [FieldOffset(0)]
         public float x;
@@ -14,6 +14,7 @@ namespace Data.OnyxMath
         public float y;
         [FieldOffset(8)]
         public float z;
+
         public OnyxVec3(float _x, float _y, float _z)
         {
             x = _x;

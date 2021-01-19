@@ -69,7 +69,7 @@ namespace Data.Game.Entities
             int bytesProcessed = 0;
             if (Client != null && Client.bufferSize > 0)
             {
-                //@todo process client data
+                // TODO: process client data
             }
             return bytesProcessed;
         }

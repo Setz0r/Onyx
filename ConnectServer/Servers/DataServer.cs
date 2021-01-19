@@ -201,6 +201,11 @@ namespace Servers
                     {
                         // TODO: get character from database
                         ZoneChar zoneChar = new ZoneChar(); // MySQL.GetZoneChar(charid);
+                        zoneChar.Account_id = 1001;
+                        zoneChar.Zone_ip_str = "127.0.0.1";
+                        zoneChar.Zone_ip = Utility.IPToInt("127.0.0.1", false);
+                        zoneChar.Zone_port = 54230;
+                        
                         if (zoneChar != null) {
 
                             if (zoneChar.Prev_zone == 0)
@@ -220,7 +225,7 @@ namespace Servers
                                 if (accountValidated) // !MySQL.ValidAccountSession(zoneChar.Account_id))
                                 {
                                     string sessionKey = Utility.ByteArrayToString(key3.Get(), "");
-
+                                    Console.WriteLine("SESSIONKEY: " + sessionKey);
                                     client.Session.Session_key = sessionKey;
                                     // TODO: create account session
                                     //MySQL.CreateAccountSession(zoneChar, charid, client.Session.Ip_address, sessionKey, client.Session.Version_mismatch);

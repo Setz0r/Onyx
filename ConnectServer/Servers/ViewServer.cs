@@ -172,7 +172,7 @@ namespace Servers
                         }
                         else
                         {
-                            //@todo get expansions and features from database
+                            // TODO: get expansions and features from database
                             AccountEF aef = new AccountEF() {  Expansions = 14, Features = 13 }; // MySQL.GetAccountEF(client.Session.Account_id);
                             ByteRef response = new ByteRef(new byte[] {
                                 0x28, 0x00, 0x00, 0x00, 0x49, 0x58, 0x46, 0x46, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
