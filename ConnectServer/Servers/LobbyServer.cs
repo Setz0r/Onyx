@@ -68,7 +68,7 @@ namespace Servers
 
             if (_packetCount == 3)
             {
-                client.Client.Disconnect(false);
+                client.Client.Disconnect(true);
             }
             /* Echo back the buffer to the server.. */
             //if (send(client, (char*)recvBuffer, result, 0) == SOCKET_ERROR)

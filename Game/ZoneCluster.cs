@@ -67,9 +67,10 @@ namespace Game
         }
 
         public bool RecieveDataCallback(UDPServer server, EndPoint endpoint, byte[] buffer, int offset, int size)
-        {
+        {            
             if (size > 0)
             {
+                Console.WriteLine(Utility.ByteArrayToString(buffer.Take(size).ToArray()));
                 Player player = null;
                 ZONEID playerZone = GetZoneIDByEndpoint(endpoint);
                 
@@ -83,7 +84,7 @@ namespace Game
                         }
                     }
                     // possible new connection
-                    // @todo check database for endpoint/zone
+                    // TODO: check database for endpoint/zone
                 }
                 else
                 {
@@ -105,6 +106,9 @@ namespace Game
 
                 if (player != null)
                 {
+                    string keybytes = "000000000000000000000000000000005CE05DAD";
+                    byte[] key = Utility.StringToByteArray(keybytes);
+                    player.Client.SetBlowfishKey(key);
                     player.Client.RecvData(buffer.Skip(offset).Take(size).ToArray());
                     UInt16 bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, this);
                     if (bytesProcessed > 0)

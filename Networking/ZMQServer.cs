@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Core;
 using NetMQ.Sockets;
@@ -28,7 +29,7 @@ namespace Networking
                 poller = new NetMQPoller { socket };
 
                 socket.ReceiveReady += (s, a) =>
-                {                    
+                {   
                     byte[] data = a.Socket.ReceiveFrameBytes();
                     byte[] response = callback(data, data.Length);
                     if (response != null)
@@ -38,7 +39,7 @@ namespace Networking
                     else
                     {
                         a.Socket.SendFrame(new byte[] { 0 });
-                    }                    
+                    }
                 };
 
                 poller.RunAsync();

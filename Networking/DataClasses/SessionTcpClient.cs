@@ -5,6 +5,7 @@ namespace Networking
 {
     public class SessionTcpClient : TcpClient
     {
+        public string EndPoint { get; set; }
         public StreamReader Reader { get; }
         public StreamWriter Writer { get; }
         private LoginSession _session;
