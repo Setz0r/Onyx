@@ -32,7 +32,7 @@ namespace Data.DataChunks.Incoming
     //
 
     [StructLayout(LayoutKind.Explicit)]
-    public class ZoneConnectData
+    public struct ZoneConnectData
     {
         [FieldOffset(0)]
         public BaseChunk header;

@@ -54,7 +54,7 @@ namespace ZoneServer
             {
                 GameManager game = new GameManager();
                 game.Initialize();
-                TestJunk();
+                //TestJunk();
                 game.GameLoop();
                 game.Shutdown();
             }

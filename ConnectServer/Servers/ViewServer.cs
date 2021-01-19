@@ -9,6 +9,7 @@ using ConnectServer;
 using DatabaseClient;
 using Data.Game.Entities;
 using Data.Game;
+using Data.OnyxMath;
 
 namespace Servers
 {
@@ -71,7 +72,8 @@ namespace Servers
             player.Profile = new ProfileInfo();
             player.Profile.Nation = buf.GetByte(54);
             player.Location = new LocationInfo();
-            player.Location.Position = new PositionInfo();            
+            player.Location.Position = new PositionInfo();
+            player.Location.Position.Pos = new OnyxVec3(0,0,0);
             switch(player.Profile.Nation)
             {
                 case 0x02:
