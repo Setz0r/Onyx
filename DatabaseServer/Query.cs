@@ -71,32 +71,31 @@ namespace DatabaseServer
         {
             var col = db.GetCollection<T>(collection);
             BsonDocument updateItem = new BsonDocument("$set", new BsonDocument(update));
-
             var u = Builders<T>.Update.Combine(updateItem);
-
-            //col.UpdateOne(a => a.AccountId == 1001, u, new UpdateOptions { IsUpsert = false });
             var result = col.UpdateOne((FilterDefinition<T>)filterExp, u, new UpdateOptions { IsUpsert = false });
             return result.ModifiedCount;
         }
 
-        public static long UpdateMany<T>(IMongoDatabase db, string collection, FilterDefinition<T> filter, UpdateDefinition<T> update)
+        public static long UpdateMany<T>(IMongoDatabase db, string collection, Expression filterExp, Dictionary<string, object> update) where T : IQueryResult, new()
         {
             var col = db.GetCollection<T>(collection);
-            var result = col.UpdateMany(filter, update);
+            BsonDocument updateItem = new BsonDocument("$set", new BsonDocument(update));
+            var u = Builders<T>.Update.Combine(updateItem);
+            var result = col.UpdateMany((FilterDefinition<T>)filterExp, u, new UpdateOptions { IsUpsert = false });
             return result.ModifiedCount;
         }
 
-        public static long DeleteOne<T>(IMongoDatabase db, string collection, FilterDefinition<T> filter)
+        public static long DeleteOne<T>(IMongoDatabase db, string collection, Expression filterExp)
         {
             var col = db.GetCollection<T>(collection);
-            var result = col.DeleteOne(filter);
+            var result = col.DeleteOne((FilterDefinition<T>)filterExp);
             return result.DeletedCount;
         }
 
-        public static long DeleteMany<T>(IMongoDatabase db, string collection, FilterDefinition<T> filter)
+        public static long DeleteMany<T>(IMongoDatabase db, string collection, Expression filterExp)
         {
             var col = db.GetCollection<T>(collection);
-            var result = col.DeleteMany(filter);
+            var result = col.DeleteMany((FilterDefinition<T>)filterExp);
             return result.DeletedCount;
         }
 

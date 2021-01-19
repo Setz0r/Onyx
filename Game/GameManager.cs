@@ -24,6 +24,7 @@ namespace Game
 
         public void LoadZoneClusters()
         {
+            // TODO: replace with yaml loading
             ZoneCluster clusterA = new ZoneCluster();            
             Zone testZoneA = new Zone(ZONEID.BASTOK_MARKETS);
             clusterA.zones.TryAdd(ZONEID.BASTOK_MARKETS, testZoneA);
@@ -49,20 +50,22 @@ namespace Game
         public void Initialize()
         {            
             Logger.Info("Initializing Game Manager");
+            
             //  TODO: initialize here
             LoadZoneClusters();
             clusterTasks = new List<Task>();
+
             foreach (var cluster in clusters)
             {   
                 foreach (var zone in cluster.zones)
                 {
                     zone.Value.Initialize();
-
                 }
                 Task task = new Task(cluster.ClusterLoop);
                 clusterTasks.Add(task);
                 task.Start();
             }
+
             Logger.Info("Game Manager Initialized, Ready to Rock!");
         }
 
@@ -70,19 +73,16 @@ namespace Game
         {
             bool active = true;
             uint portnum = 54230;
+
             Logger.Info("Entering Game Loop");
             Logger.Info("Setting Zones to Listen");
+
             foreach (var cluster in clusters)
             {
                 cluster.Listen("127.0.0.1", portnum);
                 portnum++;
             }
-            //for (int i = 0; i < 7; i++)
-            //{
-            //    UdpClient cli = new UdpClient();
-            //    cli.Connect("localhost", 54230 + i);
-            //    cli.Send(Encoding.UTF8.GetBytes("test"), 4);
-            //}
+
             while (active)
             {
                 if (Console.KeyAvailable)
@@ -100,11 +100,14 @@ namespace Game
         {
             Logger.Info("Shutting Down Signal Received");
             Logger.Info("Sending Shutdown Signal to All Active Zones");
+
             foreach (var cluster in clusters)
             {
                 cluster.status = CLUSTERSTATUS.SHUTTINGDOWN;
             }
+
             Task.WaitAll(clusterTasks.ToArray());
+
             Logger.Info("All Zones Shut Down Successfully");
             Logger.Info("Shutting Down Complete");
         }

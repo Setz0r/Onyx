@@ -1,12 +1,10 @@
 ﻿using System;
-using Data.FBEntities;
 using Networking;
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
 using MongoDB.Driver;
 using System.Threading;
 using Toolbelt;
-using Data.FBObjects;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Collections.Generic;
@@ -84,6 +82,8 @@ namespace DatabaseServer
                     return (typeof(Account), "accounts");
                 case DBREQUESTTYPE.PLAYER:
                     return (typeof(Player), "players");
+                case DBREQUESTTYPE.ACTIVESESSION:
+                    return (typeof(ActiveSession), "activesessions");
             }
 
             return (null, "");
@@ -214,7 +214,25 @@ namespace DatabaseServer
                 }
                 else if (resultType <= DBRESULTTYPE.DELETEMANY)
                 {
+                    var serializer = new ExpressionSerializer(new BinarySerializer());
+                    var exp = serializer.DeserializeBinary(data.Skip(2).Take(length - 2).ToArray());
+                    long deleted = 0;
+                    if (resultType == DBRESULTTYPE.DELETEONE)
+                    {
+                        MethodInfo queryOne = typeof(Query).GetMethod("DeleteOne", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(type);
+                        deleted = Convert.ToUInt32(queryOne.Invoke(null, new object[] { db, colname, exp }));
+                    }
+                    else if (resultType == DBRESULTTYPE.DELETEMANY)
+                    {
+                        MethodInfo queryOne = typeof(Query).GetMethod("DeleteMany", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(type);
+                        deleted = Convert.ToUInt32(queryOne.Invoke(null, new object[] { db, colname, exp }));
+                    }
 
+                    ByteRef qrref = new ByteRef(5);
+                    qrref.Set<byte>(0, 1);
+                    qrref.Set<uint>(1, deleted);
+                    client.Client.Send(qrref.Get());
+                    return 1;
                 }
                 else if (resultType <= DBRESULTTYPE.GETMAXID)
                 {

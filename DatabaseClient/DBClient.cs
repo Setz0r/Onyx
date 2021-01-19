@@ -22,7 +22,8 @@ namespace DatabaseClient
     public enum DBREQUESTTYPE : byte
     {
         ACCOUNT = 1,
-        PLAYER = 2
+        PLAYER = 2,
+        ACTIVESESSION = 3
     }
 
     public enum DBRESULTTYPE : byte
@@ -198,6 +199,44 @@ namespace DatabaseClient
                 updated = queryResult.GetUInt32(1);
 
             return updated;
+        }
+
+        public static long DeleteOne<T>(DBREQUESTTYPE type, Expression<Func<T, bool>> expression)
+        {
+            long deleted = 0;
+            var serializer = new ExpressionSerializer(new BinarySerializer());
+            byte[] query = serializer.SerializeBinary(expression);
+
+            ByteRef payload = new ByteRef(2 + query.Length);
+            payload.Set<byte>(0, (byte)type);
+            payload.Set<byte>(1, (byte)DBRESULTTYPE.DELETEONE);
+            payload.Set<byte[]>(2, query);
+
+            ByteRef queryResult = new ByteRef(SendQuery(payload.Get()));
+
+            if (queryResult.Length >= 5 || (DBRESPONSETYPE)queryResult.GetByte(0) != DBRESPONSETYPE.FAILURE)
+                deleted = queryResult.GetUInt32(1);
+
+            return deleted;
+        }
+
+        public static long DeleteMany<T>(DBREQUESTTYPE type, Expression<Func<T, bool>> expression)
+        {
+            long deleted = 0;
+            var serializer = new ExpressionSerializer(new BinarySerializer());
+            byte[] query = serializer.SerializeBinary(expression);
+
+            ByteRef payload = new ByteRef(2 + query.Length);
+            payload.Set<byte>(0, (byte)type);
+            payload.Set<byte>(1, (byte)DBRESULTTYPE.DELETEMANY);
+            payload.Set<byte[]>(2, query);
+
+            ByteRef queryResult = new ByteRef(SendQuery(payload.Get()));
+
+            if (queryResult.Length >= 5 || (DBRESPONSETYPE)queryResult.GetByte(0) != DBRESPONSETYPE.FAILURE)
+                deleted = queryResult.GetUInt32(1);
+
+            return deleted;
         }
 
         public static uint GetMaxID(DBREQUESTTYPE type)

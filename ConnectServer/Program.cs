@@ -45,6 +45,23 @@ namespace ConnectServer
             DataServer.Initialize("127.0.0.1", 54230);
             Logger.Info("Data Server Initialized");
 
+            ActiveSession ass = new ActiveSession()
+            {
+                AccountID = 1234,
+                PlayerID = 4321,
+                EndPoint = "127.0.0.1:50301",
+                CurrentZoneID = 245,
+                NextZoneID = 245,
+                Zoning = 0,
+                SessionHash = "000000000000000000000000000000005CE05DAD"
+            };
+
+            DBClient.InsertOne(DBREQUESTTYPE.ACTIVESESSION, ass);
+
+            DBClient.UpdateOne<ActiveSession>(DBREQUESTTYPE.ACTIVESESSION, a => a.AccountID == 1234, new Dictionary<string, object> { { "CurrentZoneID", 206} });
+
+            DBClient.DeleteOne<ActiveSession>(DBREQUESTTYPE.ACTIVESESSION, a => a.AccountID == 1234);
+
             //long updated = DBClient.UpdateOne<Account>(DBREQUESTTYPE.ACCOUNT,a => a.AccountId == 1001,new Dictionary<string, object>() { {"PlayerVars.Test", 5 } } );
             //Console.WriteLine(updated);
         }
