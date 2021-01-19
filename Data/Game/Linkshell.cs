@@ -1,4 +1,5 @@
 ﻿using Data.Game.Entities;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -6,8 +7,9 @@ using System.Text;
 
 namespace Data.Game
 {
+    [Serializable]
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct LinkshellColor
+    public class LinkshellColor
     {
         [FieldOffset(0)]
         public byte Red;
@@ -17,9 +19,11 @@ namespace Data.Game
         public byte Blue;
     }
 
+    [Serializable]
+    [BsonIgnoreExtraElements]
     public class Linkshell
     {
-        public UInt32 id;
+        public uint id;
         public string name;
         public LinkshellColor color;
         public string message;        

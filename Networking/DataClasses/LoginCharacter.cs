@@ -3,7 +3,7 @@
 namespace Networking
 {
     [StructLayout(LayoutKind.Explicit)]
-    public struct Look
+    public class Look
     {
         [FieldOffset(0)]
         public ushort size;

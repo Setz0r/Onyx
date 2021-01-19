@@ -8,14 +8,14 @@ using Toolbelt;
 namespace Data.DataChunks
 {
     [StructLayout(LayoutKind.Explicit)]
-    public struct ChunkHeader
+    public class ChunkHeader
     {
         [FieldOffset(0)]
         public byte id;
         [FieldOffset(1)]
         public byte size;
         [FieldOffset(2)]
-        public UInt16 sync;
+        public ushort sync;
     }
 
     public class BaseChunk
@@ -39,9 +39,9 @@ namespace Data.DataChunks
             data.Set<byte>(1, size);            
         }
 
-        public void SetSync(UInt16 sync)
+        public void SetSync(ushort sync)
         {
-            data.Set<UInt16>(2, sync);
+            data.Set<ushort>(2, sync);
         }
 
         public byte GetID()
@@ -54,7 +54,7 @@ namespace Data.DataChunks
             return data.GetByte(1);
         }
 
-        public UInt16 GetSync()
+        public ushort GetSync()
         {
             return data.GetUInt16(2);
         }

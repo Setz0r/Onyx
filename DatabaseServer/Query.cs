@@ -12,9 +12,11 @@ using System.IO;
 using System.Runtime.Serialization;
 using Toolbelt;
 using System.Runtime.Serialization.Formatters.Binary;
+using Data.Game.Entities;
+using MongoDB.Bson.Serialization;
 
 namespace DatabaseServer
-{    
+{
     public static class Query
     {
         private static T Deserialize<T>(byte[] param)
@@ -65,5 +67,61 @@ namespace DatabaseServer
             col.InsertMany(objs);
         }
 
+        public static long UpdateOne<T>(IMongoDatabase db, string collection, Expression filterExp, Dictionary<string, object> update) where T : IQueryResult, new()
+        {
+            var col = db.GetCollection<T>(collection);
+            BsonDocument updateItem = new BsonDocument("$set", new BsonDocument(update));
+
+            var u = Builders<T>.Update.Combine(updateItem);
+
+            //col.UpdateOne(a => a.AccountId == 1001, u, new UpdateOptions { IsUpsert = false });
+            var result = col.UpdateOne((FilterDefinition<T>)filterExp, u, new UpdateOptions { IsUpsert = false });
+            return result.ModifiedCount;
+        }
+
+        public static long UpdateMany<T>(IMongoDatabase db, string collection, FilterDefinition<T> filter, UpdateDefinition<T> update)
+        {
+            var col = db.GetCollection<T>(collection);
+            var result = col.UpdateMany(filter, update);
+            return result.ModifiedCount;
+        }
+
+        public static long DeleteOne<T>(IMongoDatabase db, string collection, FilterDefinition<T> filter)
+        {
+            var col = db.GetCollection<T>(collection);
+            var result = col.DeleteOne(filter);
+            return result.DeletedCount;
+        }
+
+        public static long DeleteMany<T>(IMongoDatabase db, string collection, FilterDefinition<T> filter)
+        {
+            var col = db.GetCollection<T>(collection);
+            var result = col.DeleteMany(filter);
+            return result.DeletedCount;
+        }
+
+        public static uint GetMaxAccountID(IMongoDatabase db, string collection)
+        {
+            uint accId = 1000;
+            var col = db.GetCollection<Account>(collection);
+            Account acc = col.AsQueryable().OrderByDescending(a => a.AccountId).FirstOrDefault();
+
+            if (acc != null && acc.AccountId > 0)
+                accId = (uint)acc.AccountId;
+
+            return accId;
+        }
+
+        public static uint GetMaxPlayerID(IMongoDatabase db, string collection)
+        {
+            uint playerId = 1000;
+            var col = db.GetCollection<Player>(collection);
+            Player p = col.AsQueryable().OrderByDescending(p => p.PlayerId).FirstOrDefault();
+
+            if (p != null && p.PlayerId > 0)
+                playerId = (uint)p.PlayerId;
+
+            return playerId;
+        }
     }
 }

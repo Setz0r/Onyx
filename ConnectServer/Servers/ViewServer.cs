@@ -6,6 +6,9 @@ using Toolbelt;
 using static Ansi.AnsiFormatter;
 using System.Text.RegularExpressions;
 using ConnectServer;
+using DatabaseClient;
+using Data.Game.Entities;
+using Data.Game;
 
 namespace Servers
 {
@@ -40,56 +43,70 @@ namespace Servers
         {
             Random rnd = new Random();
 
-            CharMini createChar = new CharMini();
+            Player player = new Player()
+            {
+                AccountId = accountID,
+                TimeCreate = Utility.Timestamp(),
+                TimeLastModify = Utility.Timestamp()
+            };
+
+            // TODO: put all these class initializers in various constructors
+            player.Name = charName;
+            player.Look = new Data.Game.Entities.Look();
+            player.Look.Model = new ModelInfo();
+            player.Look.Model.Race = buf.GetByte(48);
+            player.Look.Size = buf.GetByte(57);            
+            player.Look.Model.Face = buf.GetByte(60);
             
-            createChar.Name = charName;
-
-            createChar.Look.race = buf.GetByte(48);
-            createChar.Look.size = buf.GetByte(57);
-            createChar.Look.face = buf.GetByte(60);
-
+            player.Stats = new PlayerStats();
+            
             byte job = buf.GetByte(50);
 
-            createChar.Job = (byte)Utility.Clamp(buf.GetByte(50), 1, 6);
+            player.Stats.Job = (byte)Utility.Clamp(job, 1, 6);
             
-            if (createChar.Job != job)
+            if (player.Stats.Job != job)
             {
                 Logger.Warning("{0} tried to create a character with an invalid starting job", new object[] { charName });
             }
-
-            createChar.Nation = buf.GetByte(54);
-
-            switch(createChar.Nation)
+            player.Profile = new ProfileInfo();
+            player.Profile.Nation = buf.GetByte(54);
+            player.Location = new LocationInfo();
+            player.Location.Position = new PositionInfo();            
+            switch(player.Profile.Nation)
             {
                 case 0x02:
-                    while (createChar.Zone == 0 || createChar.Zone == 0xEF)
+                    while (player.Location.CurrentZone == 0 || player.Location.CurrentZone == 0xEF)
                     {
-                        createChar.Zone = (ushort)rnd.Next(0xEE, 0xF1);
+                        player.Location.CurrentZone = (ushort)rnd.Next(0xEE, 0xF1);
                     }
                     break;
                 case 0x01:
-                    createChar.Zone = (ushort)rnd.Next(0xEA, 0xEC);
+                    player.Location.CurrentZone = (ushort)rnd.Next(0xEA, 0xEC);
                     break;
                 case 0x00:
-                    createChar.Zone = (ushort)rnd.Next(0xE6, 0xE8);
+                    player.Location.CurrentZone = (ushort)rnd.Next(0xE6, 0xE8);
                     break;
             }
 
-            // TODO: get next char id in list
-            uint CharID = 1; // MySQL.GetNextCharID();
+            uint PlayerID = 1000;
+            uint maxPlayerID = DBClient.GetMaxID(DBREQUESTTYPE.PLAYER);
 
-            // TODO: create character in database
-            
-            if (CharID == 1) { } //delete this
-            //if (MySQL.CreateChar(accountID, CharID, createChar) == -1)
-            //{
-            //    Logger.Log(Colorize($"{ConsoleColor.Red}Failed to Create New Character") + " : {0} : {1}", accountID, charName);
-            //    return false;
-            //}
+            if (maxPlayerID > 0)
+                PlayerID = maxPlayerID + 1;
 
-            Logger.Success("New Character Created : {0}", new object[] { charName });            
+            player.PlayerId = PlayerID;
 
-            return true;
+            bool success = DBClient.InsertOne<Player>(DBREQUESTTYPE.PLAYER, player);
+            if (success)
+            {
+                Logger.Success("New Character Created : {0}", new object[] { charName });
+            }
+            else
+            {
+                Logger.Error("Failed to Create Character : {0}", new object[] { charName });
+            }
+
+            return success;
         }
 
         private static int ViewDataHandler(SessionTcpClient client, Byte[] data, int Length)
@@ -116,7 +133,7 @@ namespace Servers
                         session.Status = SESSIONSTATUS.CHARSELECT;
 
                         string clientVersionStr = recv.GetString(0x74, 6);
-                        string expectedVersionStr = ConfigHandler.VersionConfig.ClientVersion.Substring(0, 6);
+                        string expectedVersionStr = "301812";//ConfigHandler.VersionConfig.ClientVersion.Substring(0, 6);
 
                         uint clientVersion = Convert.ToUInt32(clientVersionStr);
                         uint expectedVersion = Convert.ToUInt32(expectedVersionStr);
@@ -205,7 +222,8 @@ namespace Servers
 
                     ByteRef ReservePacket24 = new ByteRef(Data24);
 
-                    ReservePacket24.Set<string>(36, "Eden");
+                    // TODO: bring in from configuration
+                    ReservePacket24.Set<string>(36, "Onyx");
 
                     MD5 md5Hash24 = MD5.Create();
                     byte[] hash24 = md5Hash24.ComputeHash(ReservePacket24.Get(), 0, 64);
@@ -289,8 +307,9 @@ namespace Servers
                         NameBuf.BlockCopy(recv.At(32), 0, 15);                        
                         string CharName = Utility.ReadCString(NameBuf.Get());
 
-                        // TODO: check if character name available
-                        if (!Regex.IsMatch(CharName, @"^[a-zA-Z]+$") || SessionHandler.CharNameExists(CharName)) // || !MySQL.CharacterNameAvailable(CharName))
+                        Player player = DBClient.GetOne<Player>(DBREQUESTTYPE.PLAYER, p => p.Name.Equals(CharName));
+
+                        if (!Regex.IsMatch(CharName, @"^[a-zA-Z]+$") || SessionHandler.CharNameExists(CharName) || player != null)
                         {
                             ReservePacket22.BlockCopy(lobbyErrorData, 0, sendSize);
                             ReservePacket22.Set<ushort>(32, 313);

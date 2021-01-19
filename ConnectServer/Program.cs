@@ -1,34 +1,52 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Data.Game;
 using DatabaseClient;
+using MongoDB.Bson;
 using Servers;
 using Toolbelt;
 using static Toolbelt.Logger;
 
 namespace ConnectServer
 {
+
+    public static class ThreadExtension
+    {
+        public static void WaitAll(this IEnumerable<Thread> threads)
+        {
+            if (threads != null)
+            {
+                foreach (Thread thread in threads)
+                { thread.Join(); }
+            }
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
-            Logger.SetLoggingLevel(LOGGINGLEVEL.ALL, "ConnectServer.log");
+            Logger.SetLoggingLevel(LOGGINGLEVEL.ALL);
 
-            ConfigHandler.ReadConfigs();
+            //ConfigHandler.ReadConfigs();
 
             SessionHandler.Initialize();
             Logger.Info("Session Handler Initialized");
 
-            // TODO: change how configurations are loaded
-            AuthServer.Initialize(ConfigHandler.LoginConfig.LoginAuthIP, ConfigHandler.LoginConfig.LoginAuthPort);
+            //// TODO: change how configurations are loaded
+            
+            AuthServer.Initialize("127.0.0.1", 54231);
             Logger.Info("Auth Server Initialized");
-            ViewServer.Initialize(ConfigHandler.LoginConfig.LoginViewIP, ConfigHandler.LoginConfig.LoginViewPort);
+            ViewServer.Initialize("127.0.0.1", 54001);
             Logger.Info("View Server Initialized");
-            DataServer.Initialize(ConfigHandler.LoginConfig.LoginDataIP, ConfigHandler.LoginConfig.LoginDataPort);
+            DataServer.Initialize("127.0.0.1", 54230);
             Logger.Info("Data Server Initialized");
 
-            Logger.SetLoggingLevel(Logger.LOGGINGLEVEL.ALL, "ConnectServer.log");
-
-            DBClient.TestSerialize();
-            Console.ReadKey();
+            //long updated = DBClient.UpdateOne<Account>(DBREQUESTTYPE.ACCOUNT,a => a.AccountId == 1001,new Dictionary<string, object>() { {"PlayerVars.Test", 5 } } );
+            //Console.WriteLine(updated);
         }
     }
 }

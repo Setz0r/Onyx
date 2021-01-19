@@ -7,57 +7,63 @@ using System.Collections.Concurrent;
 using Data.OnyxMath;
 using Data.Game;
 using Toolbelt;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Data.Game.Entities
 {
+    [Serializable]
     [StructLayout(LayoutKind.Explicit)]
-    public struct ModelInfo
+    public class ModelInfo
     {
         [FieldOffset(0)]
         public byte Face;
         [FieldOffset(1)]
         public byte Race;
         [FieldOffset(0)]
-        public UInt16 Id;
+        public ushort Id;
     }
 
-    public struct Look
+    [Serializable]
+    public class Look
     {
-        public UInt16 Size;
+        public ushort Size;
         public ModelInfo Model;
-        public UInt16 Head, Body, Hands, Legs, Feet, Main, Sub, Ranged;
+        public ushort Head, Body, Hands, Legs, Feet, Main, Sub, Ranged;
     }
 
+    [Serializable]
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct BaseEntityInfo
+    public class BaseEntityInfo
     {        
         [FieldOffset(0)] 
-        public UInt32 EntityId;
+        public uint EntityId;
         [FieldOffset(4)]
-        public UInt16 TargetId;
+        public ushort TargetId;
         [FieldOffset(6)]
         public UPDATETYPE UpdateMask;
     }
 
+    [Serializable]
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct MovementInfo
+    public class MovementInfo
     {
         [FieldOffset(0)]
         public byte Rotation;
         [FieldOffset(1)]
         public OnyxVec3 Position;
         [FieldOffset(13)]
-        public UInt16 MoveCount;
+        public ushort AnimationFrame;
         [FieldOffset(15)]
-        public UInt16 TargetIndex;
+        public ushort TargetIndex;
         [FieldOffset(17)]
         public byte MovementSpeed;
         [FieldOffset(18)]
         public byte animationSpeed;
     }
 
+    [Serializable]
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
-    public struct DisplayInfo
+    public class DisplayInfo
     {
         [FieldOffset(0)]
         public byte HpPercent;
@@ -65,32 +71,35 @@ namespace Data.Game.Entities
         public byte Animation;
     }
 
-
+    [Serializable]
+    [BsonIgnoreExtraElements]
     public class Entity
     {
         public Entity()
         {
             EntityType = ENTITYTYPE.NONE;
             Status = ENTITYSTATUS.NORMAL;
+            BaseInfo = new BaseEntityInfo();
             BaseInfo.UpdateMask = UPDATETYPE.NONE;
-
+            
             Target = null;
-            LocalVariables = new ConcurrentDictionary<string, int>();
-            Name = String.Empty;
+            LocalVariables = new Dictionary<string, int>();
+            Name = string.Empty;
         }
 
-        public ENTITYTYPE EntityType;
-        public ENTITYSTATUS Status;
-        public Entity Target;
-        public ConcurrentDictionary<string, Int32> LocalVariables;
+        public ENTITYTYPE EntityType { get; set; }
+        public ENTITYSTATUS Status { get; set; }
+        public Entity Target { get; set; }
+        public Dictionary<string, int> LocalVariables { get; set; }
+        public LocationInfo Location { get; set; }
 
         // packet data
-        public BaseEntityInfo BaseInfo;
-        public MovementInfo MoveInfo;
-        public DisplayInfo DisplayInfo;
+        public BaseEntityInfo BaseInfo { get; set; }
+        public MovementInfo MoveInfo { get; set; }
+        public DisplayInfo DisplayInfo { get; set; }
 
-        public Look Look;
-        public byte Allegience;
-        public string Name;
+        public Look Look { get; set; }
+        public byte Allegience { get; set; }
+        public string Name { get; set; }
     }
 }

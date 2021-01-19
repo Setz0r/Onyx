@@ -9,8 +9,6 @@ namespace Networking
 {
     public class LoginSession
     {
-        private LoginAccount _account;
-
         private SessionTcpClient _auth_client;
         private SessionTcpClient _data_client;
         private SessionTcpClient _view_client;
@@ -47,8 +45,6 @@ namespace Networking
             _view_buffer = new byte[2048];
             _lobby_buffer = new byte[2048];
         }
-
-        public LoginAccount Account { get => _account; set => _account = value; }
 
         public SessionTcpClient Auth_client { get => _auth_client; set => _auth_client = value; }
 
