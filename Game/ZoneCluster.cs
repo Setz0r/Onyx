@@ -49,8 +49,11 @@ namespace Game
         {
             foreach (var zone in zones)
             {
-                foreach (var player in zone.Value.Players)
-                    player.Value.Save();
+                // TODO: create player loading/saving mechanic in this class
+
+                //foreach (var player in zone.Value.Players) { }
+                // TODO : save all players
+
                 zone.Value.Shutdown();
             }
             return true;

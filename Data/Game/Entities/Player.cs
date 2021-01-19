@@ -74,16 +74,6 @@ namespace Data.Game.Entities
             return bytesProcessed;
         }
 
-        public bool Load(uint id)
-        {
-            return true;
-        }
-
-        public bool Save()
-        {
-            return true;
-        }
-
         public uint PlayerId { get; set; }
         public uint AccountId { get; set; }
 

@@ -25,6 +25,7 @@ namespace Networking
             BufferSize = buffersize;
             MinThreads = minThreads;
             MaxThreads = maxThreads;
+            Clients = new List<TCPClient>();
         }
 
         public byte[] SendAndReceive(byte[] data)

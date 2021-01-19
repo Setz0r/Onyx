@@ -46,10 +46,9 @@ namespace Data.World
         {
             Logger.Info("Zone {0} shutting down", new object[] { (int)ZoneId });
             Thread.Sleep(3000);
-            foreach (var player in Players)
-            {
-                player.Value.Save();
-            }            
+            
+            // TODO: handle zone shutdown tasks
+
             Logger.Info("Zone {0} successfully shutdown", new object[] { (int)ZoneId });
             return true;
         }
