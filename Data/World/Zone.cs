@@ -10,17 +10,21 @@ using System.Net;
 using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Data.World
 {
-    public struct ZoneAnimationInfo
+    [Serializable]
+    public class ZoneAnimationInfo
     {
         public byte direction;
         public byte animation;
-        public UInt32 startTime;
-        public UInt16 duration;
+        public uint startTime;
+        public ushort duration;
     }
 
+    [Serializable]
+    [BsonIgnoreExtraElements]
     public class Zone
     {
         public Zone(ZONEID zoneId)
@@ -55,7 +59,7 @@ namespace Data.World
             return true;
         }
 
-        public Player GetPlayerByID(UInt32 playerID)
+        public Player GetPlayerByID(uint playerID)
         {
             if (Players.ContainsKey(playerID))
             {
@@ -66,6 +70,8 @@ namespace Data.World
 
         public Player InsertPlayer(UDPServer serv, EndPoint ep)
         {
+            // TODO: load player from dbserver
+
             Player player = new Player
             {
                 Client = new UDPClient(serv, ep),
@@ -73,9 +79,8 @@ namespace Data.World
                 PlayerStatus = PLAYERSTATUS.REQUESTING_ZONE
             };
 
-            //@todo load player from dbserver
             Random rand = new Random();
-            if (Players.TryAdd(12345 + (uint)rand.Next(0, 1000000), player))
+            if (Players.TryAdd(1002, player))
             {
                 Logger.Success("Player connected to Zone ID: {0} ", new object[] { (int)ZoneId });
             }
@@ -95,7 +100,7 @@ namespace Data.World
         public CONTINENT Continent;
         public WeatherInfo Weather;
 
-        public ConcurrentDictionary<UInt32, Player> Players;
-        public ConcurrentDictionary<UInt32, Npc> Npcs;
+        public ConcurrentDictionary<uint, Player> Players;
+        public ConcurrentDictionary<uint, Npc> Npcs;
     }
 }

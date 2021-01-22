@@ -4,16 +4,17 @@ using System.Linq;
 using Toolbelt;
 using System;
 using Networking;
+using System.Collections.Concurrent;
 
 namespace ConnectServer
 {
     public static class SessionHandler
     {
-        public static List<LoginSession> _sessions;
+        public static ConcurrentBag<LoginSession> _sessions;
 
         public static void Initialize()
         {
-            _sessions = new List<LoginSession>();
+            _sessions = new ConcurrentBag<LoginSession>();
         }
 
         public static void AddSession(LoginSession session)
@@ -40,13 +41,14 @@ namespace ConnectServer
             List<LoginSession> sessions = new List<LoginSession>(); //MySQL.GetAccountsSessions();
 
             bool SessionInDB = sessions.Exists(x => x.Account_id == accountID);
-            bool SessionInCS = _sessions.Exists(x => x.Account_id == accountID);
+            
+            bool SessionInCS = _sessions.Where(x => x.Account_id.Equals(accountID)).Count() > 0;
             
             if (SessionInCS && SessionInDB)
                 return true;
             if (SessionInCS && !SessionInDB)
             {
-                LoginSession s = _sessions.Find(x => x.Account_id.Equals(accountID));
+                LoginSession s = _sessions.Where(x => x.Account_id.Equals(accountID)).FirstOrDefault();
                 if (s != null)
                     KillSession(s);
             }
@@ -63,6 +65,19 @@ namespace ConnectServer
             }
 
             return null;
+        }
+
+        public static ConcurrentBag<LoginSession> RemoveSession(LoginSession session)
+        {
+            ConcurrentBag<LoginSession> newList = new ConcurrentBag<LoginSession>();
+
+            foreach(var s in _sessions)
+            {
+                if (s.Session_hash != session.Session_hash)
+                    newList.Add(s);
+            }           
+
+            return newList;
         }
 
         public static void KillSession(LoginSession session)
@@ -91,9 +106,9 @@ namespace ConnectServer
                         session.Data_client.Close();
                     else
                         session.Data_client.Dispose();
-                }
+                }                
 
-                _sessions.Remove(session);
+                _sessions = RemoveSession(session);
                 Logger.Info("Removing Session, Count: {0} : ThreadCount: {1}", new object[] { _sessions.Count, Process.GetCurrentProcess().Threads.Count });
                 Logger.Info("Total Memory: {0}", new object[] { GC.GetTotalMemory(false) });
             }

@@ -30,13 +30,6 @@ namespace Networking
     }
 
     [Flags]
-    public enum ACCOUNTSTATUS
-    {
-        NORMAL = 0X01,
-        BANNED = 0X02
-    }
-
-    [Flags]
     public enum PRIVILEGE
     {
         USER = 0X01,

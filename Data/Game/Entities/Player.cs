@@ -1,6 +1,5 @@
 ﻿using Data.Game;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Networking;
 using System.Text;
@@ -9,23 +8,45 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Data.Game.Entities
 {
-    public struct PlayerRecord
+    [Serializable]
+    [BsonIgnoreExtraElements]
+    public class PlayerRecord
     {
-        public ConcurrentDictionary<byte, byte> Jobs;
+        public Dictionary<byte, byte> Jobs { get; set; }
     }
 
-    public struct PlayerStats
+    [Serializable]
+    [BsonIgnoreExtraElements]
+    public class PlayerStats
     {
-        public UInt32 MaxHP;
-        public UInt32 MaxMP;
-        public byte Job;
-        public byte JobLevel;
-        public byte SubJob;
-        public byte SubJobLevel;
-        public UInt16 Exp;
-        public UInt16 ExpTNL;
-        public Stats BaseStats;
-        public Stats BonusStats;
+        public uint MaxHP { get; set; }
+        public uint MaxMP { get; set; }
+        public byte Job { get; set; }
+        public byte JobLevel { get; set; }
+        public byte SubJob { get; set; }
+        public byte SubJobLevel { get; set; }
+        public ushort Exp { get; set; }
+        public ushort ExpTNL { get; set; }
+        public Stats BaseStats { get; set; }
+        public Stats BonusStats { get; set; }
+    }
+
+    [Serializable]
+    [BsonIgnoreExtraElements]
+    public class ProfileInfo
+    {
+        public byte Nation { get; set; }
+        public byte MoghouseFlags { get; set; }
+        public ushort Title { get; set; }
+        public ushort[] Fame { get; set; }
+        public byte[] Rank { get; set; }
+        public uint RankPoints { get; set; }
+        public byte CampaignAllegience { get; set; }
+        public ProfileInfo()
+        {
+            Fame = new ushort[15];
+            Rank = new byte[3];
+        }
     }
 
     [Serializable]
@@ -33,7 +54,7 @@ namespace Data.Game.Entities
     public class Player : Combat, IQueryResult
     {
         public Player()
-        {            
+        {                        
             EntityType = ENTITYTYPE.PC;
             SyncId = 1;
         }
@@ -48,12 +69,12 @@ namespace Data.Game.Entities
             int bytesProcessed = 0;
             if (Client != null && Client.bufferSize > 0)
             {
-                //@todo process client data
+                // TODO: process client data
             }
             return bytesProcessed;
         }
 
-        public bool Load(UInt32 id)
+        public bool Load(uint id)
         {
             return true;
         }
@@ -63,22 +84,34 @@ namespace Data.Game.Entities
             return true;
         }
 
-        public UInt32 AccountId;
+        public uint PlayerId { get; set; }
+        public uint AccountId { get; set; }
 
-        public PlayerStats Stats;
+        public ProfileInfo Profile { get; set; }
+        public PlayerStats Stats { get; set; }
 
-        public UDPClient Client;
-        public Zone CurrentZone;
-        public Zone PreviousZone;
+        [BsonIgnore]
+        [field: NonSerialized]
+        public UDPClient Client { get; set; }
+        [BsonIgnore]
+        [field: NonSerialized]
+        public Zone CurrentZone { get; set; }
+        [BsonIgnore]
+        [field: NonSerialized]
+        public Zone PreviousZone { get; set; }
 
-        public PlayerRecord Record;
-        public UIntFlags NameFlags;
+        public PlayerRecord Record { get; set; }
+        public UIntFlags NameFlags { get; set; }
 
-        public Linkshell Linkshell;
-        public Linkshell Linkshell2;
+        public Linkshell Linkshell { get; set; }
+        public Linkshell Linkshell2 { get; set; }
 
-        public UInt16 SyncId;
-        public PLAYERSTATUS PlayerStatus;
+        public ushort SyncId { get; set; }
+        public PLAYERSTATUS PlayerStatus { get; set; }
 
+        public byte GMLevel { get; set; }
+
+        public uint TimeCreate { get; set; }
+        public uint TimeLastModify { get; set; }
     }
 }

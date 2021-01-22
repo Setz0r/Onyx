@@ -4,6 +4,16 @@ using System.Text;
 
 namespace Data.Game
 {
+
+    [Flags]
+    public enum ACCOUNTSTATUS : byte
+    {
+        NORMAL          = 0,
+        LOCKED          = 1,
+        BANNED          = 2,
+        PERMABANNED     = 3
+    }
+
     public enum PLAYERSTATUS : byte
     {
         NONE            = 0,
@@ -120,7 +130,7 @@ namespace Data.Game
         SHUTTINGDOWN    = 3
     }
 
-    public enum ZONEID : UInt16
+    public enum ZONEID : ushort
     {
         RESIDENTIAL_AREA = 0,
         PHANAUET_CHANNEL = 1,

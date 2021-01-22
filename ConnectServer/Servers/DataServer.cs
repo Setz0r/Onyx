@@ -8,6 +8,8 @@ using System.Net;
 using System.Security.Cryptography;
 using static Ansi.AnsiFormatter;
 using ConnectServer;
+using Data.Game.Entities;
+using DatabaseClient;
 
 namespace Servers
 {
@@ -97,13 +99,18 @@ namespace Servers
                         CharList.Set<byte>(8, 0x20);
 
                         // Content IDS
-                        //@todo get number of content ids for account from database
+                        // TODO: get number of content ids for account from database
                         byte ContentIDCount = 5; //MySQL.ContentIDCount(client.Session.Account_id);
                         CharList.Set<uint>(28, ContentIDCount);                     // content id count
 
                         // Server name in the lobby menu
+<<<<<<< HEAD
                         // TODO: Have server name come from config.
                         ReserveDataA1.Set<string>(60, "Onyx"); // Server name
+=======
+                        // TODO: Get server name from config
+                        ReserveDataA1.Set<string>(60, "Onyx");  // server name
+>>>>>>> develop
 
                         // Prepare char list data
                         for (int i = 0; i < 16; ++i)
@@ -118,43 +125,50 @@ namespace Servers
                         int j = 0;
 
                         // TODO: get character list from database
-                        List<LoginCharacter> CharacterList = new List<LoginCharacter>(); // MySQL.GetChars(client.Session.Account_id, ContentIDCount);
+                        List<Player> CharacterList = DBClient.GetMany<Player>(DBREQUESTTYPE.PLAYER, p => p.AccountId == client.Session.Account_id);
                         client.Session.Char_id_list = new List<uint>();
                         client.Session.Char_id_list.Clear();
+<<<<<<< HEAD
                         foreach (LoginCharacter C in CharacterList)
                         {
                             if (C.GMLevel > 0)
+=======
+                        if (CharacterList != null && CharacterList.Count > 0)
+                            foreach (Player C in CharacterList)
+>>>>>>> develop
                             {
-                                // Add character id to session valid char id list
-                                client.Session.Char_id_list.Add(C.ID);
+                                if (ConfigHandler.MaintConfig.MaintMode == 0 || C.GMLevel > 0)
+                                {
+                                    // Add character id to session valid char id list
+                                    client.Session.Char_id_list.Add(C.PlayerId);
 
-                                // Content Ids
-                                UList.Set<uint>(16 * (j + 1), C.ID);
-                                CharList.Set<uint>(32 + 140 * j, C.ID);
-                                UList.Set<uint>(20 * (j + 1), C.ID);
+                                    // Content Ids
+                                    UList.Set<uint>(16 * (j + 1), C.PlayerId);
+                                    CharList.Set<uint>(32 + 140 * j, C.PlayerId);
+                                    UList.Set<uint>(20 * (j + 1), C.PlayerId);
 
-                                CharList.Set<uint>(4 + 32 + j * 140, C.ID);
+                                    CharList.Set<uint>(4 + 32 + j * 140, C.PlayerId);
 
-                                CharList.Set<string>(12 + 32 + j * 140, C.Name);
+                                    CharList.Set<string>(12 + 32 + j * 140, C.Name);
 
-                                CharList.Set<byte>(46 + 32 + j * 140, C.MJob);
-                                CharList.Set<byte>(73 + 32 + j * 140, C.JobLevels[C.MJob - 1]);
+                                    CharList.Set<byte>(46 + 32 + j * 140, C.Stats.Job);
+                                    CharList.Set<byte>(73 + 32 + j * 140, C.Stats.JobLevel);
 
-                                CharList.Set<byte>(44 + 32 + j * 140, C.Race);
-                                CharList.Set<byte>(56 + 32 + j * 140, C.Face);
-                                CharList.Set<ushort>(58 + 32 + j * 140, C.Head);
-                                CharList.Set<ushort>(60 + 32 + j * 140, C.Body);
-                                CharList.Set<ushort>(62 + 32 + j * 140, C.Hands);
-                                CharList.Set<ushort>(64 + 32 + j * 140, C.Legs);
-                                CharList.Set<ushort>(66 + 32 + j * 140, C.Feet);
-                                CharList.Set<ushort>(68 + 32 + j * 140, C.Main);
-                                CharList.Set<ushort>(70 + 32 + j * 140, C.Sub);
+                                    CharList.Set<byte>(44 + 32 + j * 140, C.Look.Model.Race);
+                                    CharList.Set<byte>(56 + 32 + j * 140, C.Look.Model.Face);
+                                    CharList.Set<ushort>(58 + 32 + j * 140, C.Look.Head);
+                                    CharList.Set<ushort>(60 + 32 + j * 140, C.Look.Body);
+                                    CharList.Set<ushort>(62 + 32 + j * 140, C.Look.Hands);
+                                    CharList.Set<ushort>(64 + 32 + j * 140, C.Look.Legs);
+                                    CharList.Set<ushort>(66 + 32 + j * 140, C.Look.Feet);
+                                    CharList.Set<ushort>(68 + 32 + j * 140, C.Look.Main);
+                                    CharList.Set<ushort>(70 + 32 + j * 140, C.Look.Sub);
 
-                                CharList.Set<byte>(72 + 32 + j * 140, (byte)C.Zone);
-                                CharList.Set<ushort>(78 + 32 + j * 140, C.Zone);
-                                j++;
+                                    CharList.Set<byte>(72 + 32 + j * 140, (byte)C.Location.CurrentZone);
+                                    CharList.Set<ushort>(78 + 32 + j * 140, C.Location.CurrentZone);
+                                    j++;
+                                }
                             }
-                        }
 
                         md5Hash = MD5.Create();                        
                         if (j == 0)
@@ -198,6 +212,11 @@ namespace Servers
                     {
                         // TODO: get character from database
                         ZoneChar zoneChar = new ZoneChar(); // MySQL.GetZoneChar(charid);
+                        zoneChar.Account_id = 1001;
+                        zoneChar.Zone_ip_str = "127.0.0.1";
+                        zoneChar.Zone_ip = Utility.IPToInt("127.0.0.1", false);
+                        zoneChar.Zone_port = 54230;
+                        
                         if (zoneChar != null) {
 
                             if (zoneChar.Prev_zone == 0)
@@ -217,7 +236,7 @@ namespace Servers
                                 if (accountValidated) // !MySQL.ValidAccountSession(zoneChar.Account_id))
                                 {
                                     string sessionKey = Utility.ByteArrayToString(key3.Get(), "");
-
+                                    Console.WriteLine("SESSIONKEY: " + sessionKey);
                                     client.Session.Session_key = sessionKey;
                                     // TODO: create account session
                                     //MySQL.CreateAccountSession(zoneChar, charid, client.Session.Ip_address, sessionKey, client.Session.Version_mismatch);
@@ -241,7 +260,7 @@ namespace Servers
                                     if (client.Session.View_client != null && client.Session.View_client.Connected)
                                     {
                                         client.Session.ViewSend(MainReserveData.Get(), 0x48);
-                                        client.Session.View_client.Client.Disconnect(false);
+                                        client.Session.View_client.Client.Disconnect(true);
                                     }
 
                                     client.Session.Status = SESSIONSTATUS.INGAME;

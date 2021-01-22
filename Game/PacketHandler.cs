@@ -45,8 +45,8 @@ namespace Game
             Crypto.DecryptPacket(player.Client.blowfish, ref packetData);
             while (canProcess && packetData.Length - cursor > 4)
             {
-                byte id = packetData[0];
-                size = (byte)(packetData[1] * 2);
+                byte id = packetData[cursor];
+                size = (byte)(packetData[cursor + 1] * 2);
                 if (size < packetData.Length)
                     return 0;
                 if (!ProcessDataChunk(player, packetData.Skip(cursor).Take(size).ToArray(), cluster))

@@ -10,7 +10,7 @@ namespace Data.DataChunks.Outgoing
 {
     public class PlayerUpdate : BaseChunk
     {
-        public PlayerUpdate(Player player, UInt16 sync)
+        public PlayerUpdate(Player player, ushort sync)
         {
             id = 0x0D;
             size = 0x2E;
@@ -29,7 +29,7 @@ namespace Data.DataChunks.Outgoing
             {
                 // Display Data
                 data.Set<byte[]>(0x1E, Utility.Serialize(player.DisplayInfo));
-                data.Set<UInt32>(0x20, player.NameFlags.flags);                
+                data.Set<uint>(0x20, player.NameFlags.flags);                
                 byte dbyte = data.GetByte(0x21);
                 byte val21 = (byte)(dbyte | (byte)(player.Gender * 128 + (1 << player.Look.Size)));
                 data.Set<byte>(0x21, val21);

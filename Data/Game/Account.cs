@@ -10,17 +10,28 @@ namespace Data.Game
     [BsonIgnoreExtraElements]
     public class Account : IQueryResult
     {
-        public int AccountId { get; set; }
+        public uint AccountId { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        [BsonIgnoreIfNull]
         public string Email { get; set; }
         public uint TimeCreate { get; set; }
         public uint TimeLastModify { get; set; }
         public byte ContentIds { get; set; }
+        public ushort Expansions { get; set; }
+        public byte Features { get; set; }
         public uint LockoutTime { get; set; }
         public ushort LoginAttempts { get; set; }
 
-        public UInt32[] PlayerIds { get; set; }
+        public ACCOUNTSTATUS Status { get; set; }
+
+        public uint LockTime { get; set; }
+        public uint LockDuration { get; set; }
+
+        public uint BanTime { get; set; }
+        public uint BanDuration { get; set; }
+
+        public uint[] PlayerIds { get; set; }
 
         public Player[] Players;
 

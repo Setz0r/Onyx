@@ -37,7 +37,7 @@ namespace Data.DataChunks.Incoming
         [FieldOffset(0)]
         public BaseChunk header;
         [FieldOffset(12)]
-        public UInt32 id;           // character id, for now this is the only important information we need.
+        public uint id;           // character id, for now this is the only important information we need.
     }
 
     public sealed class ZoneConnect : BaseChunk
@@ -47,7 +47,7 @@ namespace Data.DataChunks.Incoming
             if (data.id > 65535 ) //  TODO: validate player id exists and is currently logged in
                 return false;
 
-            Logger.Success("we got a fucking 0x0A");
+            Logger.Success("we got 0x0A");
 
             return true;
         }
@@ -57,7 +57,7 @@ namespace Data.DataChunks.Incoming
             ZoneConnectData zoneConnectData = Utility.Deserialize<ZoneConnectData>(bytes);
             if (Validator(zoneConnectData))
             {
-                // Handle the packet
+                // TODO: Handle the packet
                 return true;
             }
             return false;

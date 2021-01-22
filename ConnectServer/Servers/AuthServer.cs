@@ -1,4 +1,6 @@
 ﻿using ConnectServer;
+using Data.Game;
+using DatabaseClient;
 using Networking;
 using System;
 using System.Net;
@@ -73,23 +75,32 @@ namespace Servers
                     Success = 0;
                 }
                 else
-                {
-                    // TODO: sanitize username and password
-                    
+                {                                  
+                    Username = Username.Trim();
+                    Password = Password.Trim();
+
                     // TODO: check to see if account locked out
 
                     if (Action == (byte)LOGINRESULT.ATTEMPT)
                     {
-                        // TODO: get account from database
-                        LoginAccount account = new LoginAccount();//MySQL.GetAccount(Username);
+                        Account acc = DBClient.GetOne<Account>(DBREQUESTTYPE.ACCOUNT, a => a.Username.Equals(Username));
 
-                        // TODO: verify login and return account id
-                        uint AccountID = 1; // MySQL.VerifyLogin(Username, Password);
-                        if (AccountID >= 1000)
+                        if (acc != null && acc.Password.Equals(Utility.GenMD5(Password)))
                         {
+                            uint AccountID = acc.AccountId;
+
                             // TODO: handle maintenance mode and gm accounts
+<<<<<<< HEAD
 
                             if (account.Status.HasFlag(ACCOUNTSTATUS.NORMAL))
+=======
+                            if (ConfigHandler.MaintConfig.MaintMode > 0) // && !MySQL.IsGMAccount(AccountID))
+                            {
+                                response.Fill(0, 0x00, 33);
+                                Success = 0;
+                            }
+                            else if (acc.Status.HasFlag(ACCOUNTSTATUS.NORMAL))
+>>>>>>> develop
                             {
                                 if (SessionHandler.AlreadyLoggedIn(AccountID))
                                 {
@@ -103,8 +114,6 @@ namespace Servers
                                     // TODO: reset accounts last modification date
                                     //MySQL.ResetAccountLastModify(AccountID);
 
-                                    // TODO: apparently DSP's login server sends a MSG_LOGIN to the server, but it's currently defunct in the gameservers msg handler
-
                                     client.Session.Account_id = AccountID;
                                     client.Session.Session_hash = Utility.GenerateSessionHash(AccountID, Username);
                                     response.Set<byte>(0, LOGINRESULT.SUCCESS);
@@ -114,7 +123,7 @@ namespace Servers
                                     Success = 1;
                                 }
                             }
-                            else if (account.Status.HasFlag(ACCOUNTSTATUS.BANNED))
+                            else if (acc.Status.HasFlag(ACCOUNTSTATUS.BANNED))
                             {
                                 response.Fill(0, 0x00, 33);
                                 Success = 0;
@@ -122,8 +131,8 @@ namespace Servers
                         }
                         else
                         {
-                            if (account != null && account.Locked)
-                            {
+                            //if (acc != null && acc.Locked)
+                            //{
                                 //  TODO: increment attempts in accounts table
                                 //uint newLockTime = 0;
                                 //if (attempts + 1 >= 20) newLockTime = 172800; // 48 hours
@@ -132,7 +141,7 @@ namespace Servers
                                 //fmtQuery = "UPDATE accounts SET attempts = %u, lock_time = UNIX_TIMESTAMP(NOW()) + %u WHERE id = %d;";
                                 //if (Sql_Query(SqlHandle, fmtQuery, attempts + 1, newLockTime, accountId) == SQL_ERROR)
                                 //    ShowError("Failed to update lock time for account: %s\n", name.c_str());
-                            }
+                            //}
                             Logger.Warning("Invalid login attempt for: {0}", new object[] { Username });
                             response.Resize(1);
                             response.Set<byte>(0, LOGINRESULT.ERROR);
@@ -142,6 +151,7 @@ namespace Servers
                     else if (Action == (byte)LOGINRESULT.CREATE)
                     {
                         response.Resize(1);
+<<<<<<< HEAD
                         // TODO: Check to see if this is needed.
                         //if (ConfigHandler.MaintConfig.MaintMode == 0)
                         //{
@@ -172,6 +182,56 @@ namespace Servers
                         //} else
                         response.Set<byte>(0, LOGINRESULT.ERROR);
                         Success = 0;
+=======
+                        if (ConfigHandler.MaintConfig.MaintMode == 0)
+                        {
+                            Account acc = DBClient.GetOne<Account>(DBREQUESTTYPE.ACCOUNT, a => a.Username.Equals(Username));
+                            bool accountexists = (acc != null);
+
+                            uint maxAccountID = DBClient.GetMaxID(DBREQUESTTYPE.ACCOUNT);
+
+                            if (!accountexists && maxAccountID > 0)
+                            {
+                                uint AccountID = maxAccountID + 1;
+
+                                Account newAccount = new Account()
+                                {
+                                    AccountId = maxAccountID + 1,
+                                    Username = Username,
+                                    Password = Utility.GenMD5(Password),
+                                    TimeCreate = Utility.Timestamp(),
+                                    TimeLastModify = Utility.Timestamp(),
+                                    // TODO: make these configurable
+                                    ContentIds = 3,
+                                    Expansions = 14,
+                                    Features = 13,
+                                    Status = ACCOUNTSTATUS.NORMAL
+                                };
+
+                                bool success = DBClient.InsertOne<Account>(DBREQUESTTYPE.ACCOUNT, newAccount);
+                                                                
+                                if (success) 
+                                {
+                                    response.Set<byte>(0, LOGINRESULT.ERROR_CREATE);
+                                    Success = 0;
+                                }
+                                else
+                                {
+                                    response.Set<byte>(0, LOGINRESULT.SUCCESS_CREATE);
+                                    Success = 1;
+                                }
+                            }
+                            else
+                            {
+                                response.Set<byte>(0, LOGINRESULT.ERROR_CREATE);
+                                Success = 0;
+                            }
+                        } else
+                        {
+                            response.Set<byte>(0, LOGINRESULT.ERROR);
+                            Success = 0;
+                        }
+>>>>>>> develop
                     }
                 }
             }
