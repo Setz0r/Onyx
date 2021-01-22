@@ -49,7 +49,7 @@ namespace Servers
             SessionHandler.KillSession(client.Session);
         }
 
-        private static int DataDataHandler(SessionTcpClient client, Byte[] data, int Length)
+        private static int DataDataHandler(SessionTcpClient client, byte[] data, int Length)
         {
             ByteRef recv = new ByteRef(data, Length);
             byte id = recv.GetByte(0);

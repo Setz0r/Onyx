@@ -64,7 +64,7 @@ namespace DatabaseServer
             return response;
         }
 
-        public static byte[] ObjectToByteArray(Object obj)
+        public static byte[] ObjectToByteArray(object obj)
         {
             BinaryFormatter bf = new BinaryFormatter();
             using (var ms = new MemoryStream())
@@ -99,7 +99,7 @@ namespace DatabaseServer
             return 1;
         }
 
-        private static int DatabaseDataHandler(SessionTcpClient client, Byte[] data, int length)
+        private static int DatabaseDataHandler(SessionTcpClient client, byte[] data, int length)
         {
             byte[] response = new byte[] { 0 };
             DBREQUESTTYPE requestType;

@@ -60,12 +60,12 @@ namespace Toolbelt
             return -1;
         }
 
-        public static bool BitfieldContains<T>(UInt32 field, T value)
+        public static bool BitfieldContains<T>(uint field, T value)
         { 
             return (field & (uint)(object)value) != 0;
         }
 
-        public static uint BitfieldSet<T>(UInt32 field, T value)
+        public static uint BitfieldSet<T>(uint field, T value)
         {
             return Bits.SetBit(field,(int)(object)value);
         }
@@ -223,7 +223,7 @@ namespace Toolbelt
         {
             byte[] buffer = new byte[count / 2];
             random.NextBytes(buffer);
-            string result = String.Concat(buffer.Select(x => x.ToString("X2")).ToArray());
+            string result = string.Concat(buffer.Select(x => x.ToString("X2")).ToArray());
             if (count % 2 == 0)
                 return result;
             return result + random.Next(16).ToString("X");
@@ -256,9 +256,9 @@ namespace Toolbelt
             return confData;
         }
 
-        public static UInt32 Timestamp()
+        public static uint Timestamp()
         {
-            return (UInt32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            return (uint)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
         public static byte[] GetUInt32Bytes(uint value)

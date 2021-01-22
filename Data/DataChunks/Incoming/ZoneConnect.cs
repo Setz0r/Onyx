@@ -35,7 +35,7 @@ namespace Data.DataChunks.Incoming
     public struct ZoneConnectData
     {
         [FieldOffset(0)]
-        public BaseChunk header;
+        public ChunkHeader header;
         [FieldOffset(12)]
         public uint id;           // character id, for now this is the only important information we need.
     }

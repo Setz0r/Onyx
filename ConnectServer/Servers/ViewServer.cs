@@ -111,7 +111,7 @@ namespace Servers
             return success;
         }
 
-        private static int ViewDataHandler(SessionTcpClient client, Byte[] data, int Length)
+        private static int ViewDataHandler(SessionTcpClient client, byte[] data, int Length)
         {
             var addr = ((IPEndPoint)client.Client.RemoteEndPoint).Address;
             ByteRef recv = new ByteRef(data, Length);

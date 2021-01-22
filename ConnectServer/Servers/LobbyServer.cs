@@ -27,7 +27,7 @@ namespace Servers
             Console.WriteLine("STATUS CONNECT CLIENT INFO: {0} {1}", addr, port);
             return 1;
         }
-        private static int LobbyDataHandler(SessionTcpClient client, Byte[] data, int Length)
+        private static int LobbyDataHandler(SessionTcpClient client, byte[] data, int Length)
         {
             Logger.Info("Lobby Server Data Handler");
             //Logger.Log(Utility.ByteArrayToString(data));
@@ -45,7 +45,7 @@ namespace Servers
             {
                 case 0:
                     recvBuf.Set<byte>(0, 0x81);                    
-                    var t = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                    var t = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                     recvBuf.Set<uint>(0x14, t);
                     result = 24;
                     break;

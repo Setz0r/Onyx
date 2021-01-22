@@ -20,7 +20,6 @@ namespace Game
         {
             zones = new ConcurrentDictionary<ZONEID, Zone>();
             clients = new ConcurrentDictionary<EndPoint, ZONEID>();
-            
             zoneTasks = new List<Task>();
         }
 
@@ -37,6 +36,7 @@ namespace Game
 
         public void ClusterLoop()
         {
+            PacketHandler.Initialize();
             status = CLUSTERSTATUS.RUNNING;
             while (status != CLUSTERSTATUS.SHUTTINGDOWN)
             {
@@ -113,7 +113,7 @@ namespace Game
                     byte[] key = Utility.StringToByteArray(keybytes);
                     player.Client.SetBlowfishKey(key);
                     player.Client.RecvData(buffer.Skip(offset).Take(size).ToArray());
-                    UInt16 bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, size, this);
+                    ushort bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, size, this);
                     if (bytesProcessed > 0)
                     {
                         player.Client.ResetBuffer();
@@ -150,8 +150,8 @@ namespace Game
 
         public UDPServer server;
         public string host;
-        public UInt32 ip;
-        public UInt32 ipp;
+        public uint ip;
+        public uint ipp;
         public uint port;
 
         public CLUSTERSTATUS status;

@@ -18,7 +18,7 @@ namespace Servers
             Console.WriteLine("STATUS CONNECT CLIENT INFO: {0} {1}", addr, port);
             return 1;
         }
-        private static int UnkDataHandler(SessionTcpClient client, Byte[] data, int Length)
+        private static int UnkDataHandler(SessionTcpClient client, byte[] data, int Length)
         {
             Logger.Info("Unk Server Data Handler");
             //Logger.Log(Utility.ByteArrayToString(data));

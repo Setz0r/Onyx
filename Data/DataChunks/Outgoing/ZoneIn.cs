@@ -34,6 +34,8 @@ namespace Data.DataChunks.Outgoing
             // Zone Info
             data.Set<ushort>(0x30, zone.ZoneId);
 
+            data.Set<uint>(0x38, Utility.Timestamp());
+            data.Set<uint>(0x3C, VanaTime.GetInstance().VanaDate);
             
 
             Complete();

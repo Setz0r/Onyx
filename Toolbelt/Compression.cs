@@ -14,7 +14,7 @@ namespace Toolbelt
         {
             public ByteRef enc;
             public ByteRef val;
-            public UInt32[] jump;
+            public uint[] jump;
         }
 
         public static ZLib zlib;
@@ -41,15 +41,15 @@ namespace Toolbelt
             return ((table[i / 8] >> (i & 7)) & 1);
         }
 
-        static void PopulateJumpTable(ref ByteRef val, ref UInt32[] jump, ref ByteRef dec)
+        static void PopulateJumpTable(ref ByteRef val, ref uint[] jump, ref ByteRef dec)
         {
             //jump.Resize(dec.Length);
             jump = new uint[dec.Length / 4];
-            UInt32 b = dec.GetUInt32(0) - 4;
+            uint b = dec.GetUInt32(0) - 4;
 
             for (int i = 0; i < dec.Length; i += 4)
             {
-                UInt32 decval = dec.GetUInt32(i);
+                uint decval = dec.GetUInt32(i);
                 if (decval > 0xFF)
                 {
                     jump[i / 4] = (decval - b) / 4; 
@@ -101,7 +101,7 @@ namespace Toolbelt
             return lastindex;
         }
 
-        public static int Compress(byte[] data, UInt32 size, ref byte[] outdata, UInt32 outsize)
+        public static int Compress(byte[] data, uint size, ref byte[] outdata, uint outsize)
         {
             uint read = 0;
             uint maxsize = (outsize - 1) * 8;
@@ -139,7 +139,7 @@ namespace Toolbelt
             return (int)(read + 8);
         }
 
-        public unsafe static Int32 Decompress(byte[] data, UInt32 size, ref byte[] outdata, UInt32 outsize)
+        public unsafe static int Decompress(byte[] data, uint size, ref byte[] outdata, uint outsize)
         {
             int w = 0;
             outdata = new byte[outsize];

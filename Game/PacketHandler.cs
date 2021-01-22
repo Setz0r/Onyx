@@ -14,10 +14,11 @@ namespace Game
     {
         public const int FFXI_HEADER_SIZE = 28;
 
-        public static Dictionary<byte, Func<Player, byte[], bool>> IncomingPacketChunks => new Dictionary<byte, Func<Player, byte[], bool>>();
+        public static Dictionary<byte, Func<Player, byte[], bool>> IncomingPacketChunks;
 
         public static void Initialize()
         {
+            IncomingPacketChunks = new Dictionary<byte, Func<Player, byte[], bool>>();
             IncomingPacketChunks.Add(0x00A, (Player p, byte[] d) => { return ZoneConnect.Instance.Handler(p, d); });
         }
 
@@ -39,13 +40,12 @@ namespace Game
             return false;
         }
 
-        public static UInt16 ProcessPacket(Player player, byte[] packetData, int packetSize, ZoneCluster cluster)
+        public static ushort ProcessPacket(Player player, byte[] packetData, int packetSize, ZoneCluster cluster)
         {
             bool canProcess = true;
             ByteRef packetRef = new ByteRef(packetData.Take(packetSize).ToArray());
             byte[] decryptedData;
-            UInt16 cursor = 0;
-            UInt16 size = 0;
+            ushort cursor = 0;
             int checksum = Utility.Checksum(packetRef.GetBytes(FFXI_HEADER_SIZE, packetSize - FFXI_HEADER_SIZE), packetSize - (FFXI_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
             decryptedData = packetRef.Get();
             if (checksum != 0)
@@ -55,15 +55,17 @@ namespace Game
                 checksum = Utility.Checksum(packetRef.GetBytes(FFXI_HEADER_SIZE, packetSize - FFXI_HEADER_SIZE), packetSize - (FFXI_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
                 if (checksum != 0)
                 {
+                    canProcess = false;
                     Logger.Error("Unable to decrypt a packet");
                     packetRef.DebugDump();
                 }
             }
+            packetRef = new ByteRef(packetRef.Get().Skip(FFXI_HEADER_SIZE).ToArray());
             while (canProcess && packetRef.Length - cursor > 4)
-            {
+            {                
                 byte id = packetRef.GetByte(cursor);
-                size = (byte)(packetRef.GetByte(cursor + 1) * 2);
-                if (size < packetRef.Length)
+                ushort size = (byte)(packetRef.GetByte(cursor + 1) * 2);
+                if (size > packetRef.Length)
                     return 0;
                 if (!ProcessDataChunk(player, packetRef.GetBytes(cursor, size), cluster))
                 {
