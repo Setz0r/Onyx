@@ -29,6 +29,13 @@ namespace ConnectServer
     {
         static void Main(string[] args)
         {
+            VanaTime.TYPE t = VanaTime.GetInstance().Sync();
+            uint d = VanaTime.GetInstance().VanaDate;
+            uint month = VanaTime.GetInstance().Month;
+            uint day = VanaTime.GetInstance().Day;
+            uint year = VanaTime.GetInstance().Year;
+            uint hour = VanaTime.GetInstance().Hour;
+            uint minute = VanaTime.GetInstance().Minute;
             Logger.SetLoggingLevel(LOGGINGLEVEL.ALL);
 
             //ConfigHandler.ReadConfigs();

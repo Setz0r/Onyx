@@ -12,7 +12,7 @@ namespace Data.DataChunks.Outgoing
     {
         public PlayerUpdate(Player player, ushort sync)
         {
-            id = 0x0D;
+            id = 0x00D;
             size = 0x2E;
 
             // Base Data

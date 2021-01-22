@@ -47,7 +47,7 @@ namespace Data.DataChunks.Incoming
             if (data.id > 65535 ) //  TODO: validate player id exists and is currently logged in
                 return false;
 
-            Logger.Success("we got 0x0A");
+            Logger.Success("we got 0x00A");
 
             return true;
         }

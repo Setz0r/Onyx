@@ -72,7 +72,7 @@ namespace Game
         public void GameLoop()
         {
             bool active = true;
-            uint portnum = 54230;
+            uint portnum = 54240;
 
             Logger.Info("Entering Game Loop");
             Logger.Info("Setting Zones to Listen");

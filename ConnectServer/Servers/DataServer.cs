@@ -204,7 +204,7 @@ namespace Servers
                         zoneChar.Account_id = 1001;
                         zoneChar.Zone_ip_str = "127.0.0.1";
                         zoneChar.Zone_ip = Utility.IPToInt("127.0.0.1", false);
-                        zoneChar.Zone_port = 54230;
+                        zoneChar.Zone_port = 54240;
                         
                         if (zoneChar != null) {
 
@@ -292,7 +292,7 @@ namespace Servers
 
         public static void Initialize(string address, int port)
         {
-            dataServer = new TCPServer("Data Server", "0.0.0.0", 54230, DataConnectHandler, DataDataHandler, DataDisconnectHandler);
+            dataServer = new TCPServer("Data Server", address, port, DataConnectHandler, DataDataHandler, DataDisconnectHandler);
         }
     }
 }

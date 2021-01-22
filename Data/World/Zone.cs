@@ -99,6 +99,8 @@ namespace Data.World
         public CONTINENT Continent;
         public WeatherInfo Weather;
 
+        public ZoneAnimationInfo AnimationInfo;
+
         public ConcurrentDictionary<uint, Player> Players;
         public ConcurrentDictionary<uint, Npc> Npcs;
     }

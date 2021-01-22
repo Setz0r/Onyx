@@ -12,6 +12,8 @@ namespace Game
 {
     public static class PacketHandler
     {
+        public const int FFXI_HEADER_SIZE = 28;
+
         public static Dictionary<byte, Func<Player, byte[], bool>> IncomingPacketChunks => new Dictionary<byte, Func<Player, byte[], bool>>();
 
         public static void Initialize()
@@ -37,21 +39,35 @@ namespace Game
             return false;
         }
 
-        public static UInt16 ProcessPacket(Player player, byte[] packetData, ZoneCluster cluster)
+        public static UInt16 ProcessPacket(Player player, byte[] packetData, int packetSize, ZoneCluster cluster)
         {
             bool canProcess = true;
+            ByteRef packetRef = new ByteRef(packetData.Take(packetSize).ToArray());
+            byte[] decryptedData;
             UInt16 cursor = 0;
             UInt16 size = 0;
-            Crypto.DecryptPacket(player.Client.blowfish, ref packetData);
-            while (canProcess && packetData.Length - cursor > 4)
-            {
-                byte id = packetData[cursor];
-                size = (byte)(packetData[cursor + 1] * 2);
-                if (size < packetData.Length)
-                    return 0;
-                if (!ProcessDataChunk(player, packetData.Skip(cursor).Take(size).ToArray(), cluster))
+            int checksum = Utility.Checksum(packetRef.GetBytes(FFXI_HEADER_SIZE, packetSize - FFXI_HEADER_SIZE), packetSize - (FFXI_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
+            decryptedData = packetRef.Get();
+            if (checksum != 0)
+            {                
+                Crypto.DecryptPacket(player.Client.blowfish, ref decryptedData);
+                packetRef = new ByteRef(decryptedData);
+                checksum = Utility.Checksum(packetRef.GetBytes(FFXI_HEADER_SIZE, packetSize - FFXI_HEADER_SIZE), packetSize - (FFXI_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
+                if (checksum != 0)
                 {
-                    Logger.Warning("Unable to process chunk ID {0} for Player ID: {1}, Possible validation issue", new object[] { id, player.BaseInfo.EntityId });
+                    Logger.Error("Unable to decrypt a packet");
+                    packetRef.DebugDump();
+                }
+            }
+            while (canProcess && packetRef.Length - cursor > 4)
+            {
+                byte id = packetRef.GetByte(cursor);
+                size = (byte)(packetRef.GetByte(cursor + 1) * 2);
+                if (size < packetRef.Length)
+                    return 0;
+                if (!ProcessDataChunk(player, packetRef.GetBytes(cursor, size), cluster))
+                {
+                    Logger.Warning("Unable to process chunk ID {0} for Player ID: {1}, Possible validation issue", new object[] { id, player.PlayerId });
                 }
                 cursor += size;
             }

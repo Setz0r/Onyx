@@ -59,7 +59,7 @@ namespace Game
             return true;
         }
 
-        public void Listen(string hostname = "127.0.0.1", uint portnum = 54230)
+        public void Listen(string hostname = "127.0.0.1", uint portnum = 54240)
         {
             host = hostname;
             ip = Utility.IPToInt(host, true);
@@ -113,7 +113,7 @@ namespace Game
                     byte[] key = Utility.StringToByteArray(keybytes);
                     player.Client.SetBlowfishKey(key);
                     player.Client.RecvData(buffer.Skip(offset).Take(size).ToArray());
-                    UInt16 bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, this);
+                    UInt16 bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, size, this);
                     if (bytesProcessed > 0)
                     {
                         player.Client.ResetBuffer();

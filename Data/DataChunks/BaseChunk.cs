@@ -20,8 +20,6 @@ namespace Data.DataChunks
 
     public class BaseChunk
     {
-        public const int FFXI_HEADER_SIZE = 28;        
-
         public BaseChunk(byte[] bytes = null)
         {
             data = new ByteRef(512);
