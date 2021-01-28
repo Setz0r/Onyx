@@ -42,6 +42,9 @@ namespace Data.DataChunks.Incoming
 
     public sealed class ZoneConnect : BaseChunk
     {
+        public const int MinSize = 0x0;
+        public const int MaxSize = 0xFF;
+        
         public bool Validator(ZoneConnectData data)
         {
             if (data.id > 65535 ) //  TODO: validate player id exists and is currently logged in
@@ -54,6 +57,9 @@ namespace Data.DataChunks.Incoming
 
         public bool Handler(Player player, byte[] bytes)
         {
+            if (bytes.Length < MinSize || bytes.Length > MaxSize)
+                return false;
+
             ZoneConnectData zoneConnectData = Utility.Deserialize<ZoneConnectData>(bytes);
             if (Validator(zoneConnectData))
             {

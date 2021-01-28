@@ -29,6 +29,9 @@ namespace Data.DataChunks.Incoming
 
     public class ZoneSuccess : BaseChunk
     {
+        public const int MinSize = 0x0;
+        public const int MaxSize = 0xFF;
+
         public bool Validator(ZoneSuccessData data)
         {
             if (data.confirmation != 2)
@@ -41,6 +44,9 @@ namespace Data.DataChunks.Incoming
 
         public bool Handler(Player player, byte[] bytes)
         {
+            if (bytes.Length < MinSize || bytes.Length > MaxSize)
+                return false;
+
             ZoneSuccessData zoneSuccessData = Utility.Deserialize<ZoneSuccessData>(bytes);
             if (Validator(zoneSuccessData))
             {

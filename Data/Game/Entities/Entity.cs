@@ -122,9 +122,11 @@ namespace Data.Game.Entities
         public ENTITYSTATUS Status { get; set; }
         
         [BsonIgnore]
+        [field: NonSerialized]
         public Entity Target { get; set; }
         
         [BsonIgnore]
+        [field: NonSerialized]
         public Dictionary<string, int> LocalVariables { get; set; }
 
         public LocationInfo Location { get; set; }

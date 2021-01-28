@@ -39,6 +39,9 @@ namespace Data.DataChunks.Incoming
 
     public class PlayerInfoRequest : BaseChunk
     {
+        public const int MinSize = 0x0;
+        public const int MaxSize = 0xFF;
+
         public bool Validator(PlayerInfoRequestData data)
         {
             if (data.empty_a != 0 && data.empty_b != 0)
@@ -51,6 +54,9 @@ namespace Data.DataChunks.Incoming
 
         public bool Handler(Player player, byte[] bytes)
         {
+            if (bytes.Length < MinSize || bytes.Length > MaxSize)
+                return false;
+
             PlayerInfoRequestData PlayerInfoRequestData = Utility.Deserialize<PlayerInfoRequestData>(bytes);
             if (Validator(PlayerInfoRequestData))
             {

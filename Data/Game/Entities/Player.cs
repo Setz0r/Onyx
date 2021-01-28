@@ -6,6 +6,8 @@ using System.Text;
 using Data.World;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Runtime.InteropServices;
+using System.Collections.Concurrent;
+using Data.DataChunks;
 
 namespace Data.Game.Entities
 {
@@ -93,16 +95,6 @@ namespace Data.Game.Entities
             get { return (byte)((Look.Model.Race) % 2 ^ ((Look.Model.Race > 6) ? 1 : 0)); }
         }
 
-        public int ProcessPacketData()
-        {
-            int bytesProcessed = 0;
-            if (Client != null && Client.bufferSize > 0)
-            {
-                // TODO: process client data
-            }
-            return bytesProcessed;
-        }
-
         public uint PlayerId { get; set; }
         public uint AccountId { get; set; }
 
@@ -112,9 +104,11 @@ namespace Data.Game.Entities
         [BsonIgnore]
         [field: NonSerialized]
         public UDPClient Client { get; set; }
+
         [BsonIgnore]
         [field: NonSerialized]
         public Zone CurrentZone { get; set; }
+
         [BsonIgnore]
         [field: NonSerialized]
         public Zone PreviousZone { get; set; }
@@ -123,8 +117,10 @@ namespace Data.Game.Entities
         public UIntFlags NameFlags { get; set; }
 
         [BsonIgnore]
+        [field: NonSerialized]
         public Linkshell Linkshell { get; set; }
         [BsonIgnore]
+        [field: NonSerialized]
         public Linkshell Linkshell2 { get; set; }
 
         public PLAYERSTATUS PlayerStatus { get; set; }
@@ -138,6 +134,11 @@ namespace Data.Game.Entities
         public EquipInfo LockStyle { get; set; }
 
         [BsonIgnore]
+        [field: NonSerialized]
+        public ConcurrentDictionary<ushort, BaseChunk> IncomingRequests;
+
+        [BsonIgnore]
+        [field: NonSerialized]
         public ushort SyncId { get; set; }
 
         public uint TimeCreate { get; set; }

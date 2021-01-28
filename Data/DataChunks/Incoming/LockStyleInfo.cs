@@ -64,7 +64,7 @@ namespace Data.DataChunks.Incoming
                     return false;
             }
 
-            Logger.Success("we got 0x00C");
+            Logger.Success("we got 0x053");
 
             return true;
         }
@@ -75,13 +75,14 @@ namespace Data.DataChunks.Incoming
                 return false;
 
             LockStyleInfoDataHeader LockStyleInfoDataHeader = Utility.Deserialize<LockStyleInfoDataHeader>(bytes.Take(8).ToArray());
+            LockStyleInfoDataHeader.header.size *= 2;
 
             ByteRef byteRef = new ByteRef(bytes.Skip(8).ToArray());
 
             if (byteRef.Length != bytes.Length - 8)
                 return false;
 
-            LockItem[] lockItems;
+            LockItem[] lockItems = null;
             if (LockStyleInfoDataHeader.count > 0 && byteRef.Length > 0)
             {
                 lockItems = new LockItem[LockStyleInfoDataHeader.count];
@@ -91,7 +92,7 @@ namespace Data.DataChunks.Incoming
                 }
             }
 
-            if (Validator(LockStyleInfoDataHeader))
+            if (Validator(LockStyleInfoDataHeader, lockItems))
             {
 
 

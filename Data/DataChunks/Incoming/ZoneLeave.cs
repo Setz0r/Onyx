@@ -30,9 +30,11 @@ namespace Data.DataChunks.Incoming
                                // could be memory garbage although some of it seems to be the same amongst some packets
     }
 
-
     public class ZoneLeave : BaseChunk
     {
+        public const int MinSize = 0x0;
+        public const int MaxSize = 0xFF;
+
         public bool Validator(ZoneLeaveData data)
         {
             if (data.empty != 0) 
@@ -45,6 +47,9 @@ namespace Data.DataChunks.Incoming
 
         public bool Handler(Player player, byte[] bytes)
         {
+            if (bytes.Length < MinSize || bytes.Length > MaxSize)
+                return false;
+            
             ZoneLeaveData ZoneLeaveData = Utility.Deserialize<ZoneLeaveData>(bytes);
             if (Validator(ZoneLeaveData))
             {
