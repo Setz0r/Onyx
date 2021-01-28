@@ -7,6 +7,8 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Medallion;
 using BitStreams;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace Toolbelt
 {
@@ -93,6 +95,23 @@ namespace Toolbelt
             Marshal.FreeHGlobal(ptr);            
 
             return output;
+        }
+
+        public static T DeserializeBF<T>(byte[] param)
+        {
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(param))
+                {
+                    IFormatter br = new BinaryFormatter();
+                    return (T)br.Deserialize(ms);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Unable to deserialize data received from Database Server : {0}", new object[] { e.Message });
+                return default(T);
+            }
         }
 
         public static byte[] StringToByteArray(string hex)

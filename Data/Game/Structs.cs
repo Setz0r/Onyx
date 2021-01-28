@@ -58,6 +58,9 @@ namespace Data.Game
         public ushort CurrentZone { get; set; }
         public ushort DestinationZone { get; set; }
         public ushort Boundary { get; set; }
-
+        public LocationInfo()
+        {
+            Position = new PositionInfo();
+        }
     }
 }

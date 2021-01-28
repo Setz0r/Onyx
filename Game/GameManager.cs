@@ -50,8 +50,10 @@ namespace Game
         public void Initialize()
         {            
             Logger.Info("Initializing Game Manager");
-            
+
             //  TODO: initialize here
+            PacketHandler.Initialize();
+
             LoadZoneClusters();
             clusterTasks = new List<Task>();
 

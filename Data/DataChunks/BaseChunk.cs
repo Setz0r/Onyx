@@ -8,7 +8,7 @@ using Toolbelt;
 namespace Data.DataChunks
 {
     [StructLayout(LayoutKind.Explicit)]
-    public class ChunkHeader
+    public struct ChunkHeader
     {
         [FieldOffset(0)]
         public byte id;

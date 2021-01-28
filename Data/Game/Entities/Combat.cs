@@ -62,6 +62,8 @@ namespace Data.Game.Entities
     {
         public Combat()
         {
+            baseStats = new Stats();
+            statBonus = new Stats();
         }
 
         public Stats baseStats { get; set; }

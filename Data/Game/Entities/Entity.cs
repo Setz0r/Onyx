@@ -24,11 +24,38 @@ namespace Data.Game.Entities
     }
 
     [Serializable]
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    public class EquipInfo
+    {
+        [FieldOffset(0)] 
+        public ushort Head;
+        [FieldOffset(2)]
+        public ushort Body;
+        [FieldOffset(4)]
+        public ushort Hands;
+        [FieldOffset(6)]
+        public ushort Legs;
+        [FieldOffset(8)]
+        public ushort Feet;
+        [FieldOffset(10)]
+        public ushort Main;
+        [FieldOffset(12)]
+        public ushort Sub;
+        [FieldOffset(14)]
+        public ushort Ranged;
+    }
+
+    [Serializable]
     public class Look
     {
         public ushort Size;
         public ModelInfo Model;
-        public ushort Head, Body, Hands, Legs, Feet, Main, Sub, Ranged;
+        public EquipInfo Equipment;
+        public Look()
+        {
+            Model = new ModelInfo();
+            Equipment = new EquipInfo();
+        }
     }
 
     [Serializable]
@@ -79,18 +106,27 @@ namespace Data.Game.Entities
         {
             EntityType = ENTITYTYPE.NONE;
             Status = ENTITYSTATUS.NORMAL;
-            BaseInfo = new BaseEntityInfo();
-            BaseInfo.UpdateMask = UPDATETYPE.NONE;
+            BaseInfo = new BaseEntityInfo();            
             
             Target = null;
+            Location = new LocationInfo();
             LocalVariables = new Dictionary<string, int>();
+            MoveInfo = new MovementInfo();
+            DisplayInfo = new DisplayInfo();
+            Look = new Look();
+
             Name = string.Empty;
         }
 
         public ENTITYTYPE EntityType { get; set; }
         public ENTITYSTATUS Status { get; set; }
+        
+        [BsonIgnore]
         public Entity Target { get; set; }
+        
+        [BsonIgnore]
         public Dictionary<string, int> LocalVariables { get; set; }
+
         public LocationInfo Location { get; set; }
 
         // packet data

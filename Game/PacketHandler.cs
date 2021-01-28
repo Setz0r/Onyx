@@ -12,7 +12,7 @@ namespace Game
 {
     public static class PacketHandler
     {
-        public const int FFXI_HEADER_SIZE = 28;
+        public const int PACKET_HEADER_SIZE = 28;
 
         public static Dictionary<byte, Func<Player, byte[], bool>> IncomingPacketChunks;
 
@@ -20,6 +20,10 @@ namespace Game
         {
             IncomingPacketChunks = new Dictionary<byte, Func<Player, byte[], bool>>();
             IncomingPacketChunks.Add(0x00A, (Player p, byte[] d) => { return ZoneConnect.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x00C, (Player p, byte[] d) => { return PlayerInfoRequest.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x00D, (Player p, byte[] d) => { return ZoneLeave.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x011, (Player p, byte[] d) => { return ZoneSuccess.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x053, (Player p, byte[] d) => { return LockStyleInfo.Instance.Handler(p, d); });
         }
 
         public static bool ProcessDataChunk(Player player, byte[] chunkData, ZoneCluster cluster)
@@ -46,13 +50,16 @@ namespace Game
             ByteRef packetRef = new ByteRef(packetData.Take(packetSize).ToArray());
             byte[] decryptedData;
             ushort cursor = 0;
-            int checksum = Utility.Checksum(packetRef.GetBytes(FFXI_HEADER_SIZE, packetSize - FFXI_HEADER_SIZE), packetSize - (FFXI_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
+
+            // TODO: make this more efficient and trim off the header before anything else...
+
+            int checksum = Utility.Checksum(packetRef.GetBytes(PACKET_HEADER_SIZE, packetSize - PACKET_HEADER_SIZE), packetSize - (PACKET_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
             decryptedData = packetRef.Get();
             if (checksum != 0)
             {                
                 Crypto.DecryptPacket(player.Client.blowfish, ref decryptedData);
                 packetRef = new ByteRef(decryptedData);
-                checksum = Utility.Checksum(packetRef.GetBytes(FFXI_HEADER_SIZE, packetSize - FFXI_HEADER_SIZE), packetSize - (FFXI_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
+                checksum = Utility.Checksum(packetRef.GetBytes(PACKET_HEADER_SIZE, packetSize - PACKET_HEADER_SIZE), packetSize - (PACKET_HEADER_SIZE + 16), packetRef.GetBytes(packetSize - 16, 16));
                 if (checksum != 0)
                 {
                     canProcess = false;
@@ -60,7 +67,7 @@ namespace Game
                     packetRef.DebugDump();
                 }
             }
-            packetRef = new ByteRef(packetRef.Get().Skip(FFXI_HEADER_SIZE).ToArray());
+            packetRef = new ByteRef(packetRef.Get().Skip(PACKET_HEADER_SIZE).ToArray());
             while (canProcess && packetRef.Length - cursor > 4)
             {                
                 byte id = packetRef.GetByte(cursor);

@@ -502,5 +502,51 @@ namespace Data.Game
         BATTLEFIELD = 4,
         DYNAMIS = 5,
         INSTANCED = 6
-    }    
+    }
+    
+    public enum CONTAINERS : byte
+    {
+        INVENTORY = 0,
+        MOGSAFE = 1,
+        STORAGE = 2,
+        TEMPITEMS = 3,
+        MOGLOCKER = 4,
+        MOGSATCHEL = 5,
+        MOGSACK = 6,
+        MOGCASE = 7,
+        WARDROBE = 8,
+        MOGSAFE2 = 9,
+        WARDROBE2 = 10,
+        WARDROBE3 = 11,
+        WARDROBE4 = 12,
+    }
+
+    public static class EQUIP_SLOTS
+    {
+        public const byte MAIN   = 0x00;
+        public const byte SUB    = 0x01;
+        public const byte RANGED = 0x02;
+        public const byte AMMO   = 0x03;
+        public const byte HEAD   = 0x04;
+        public const byte BODY   = 0x05;
+        public const byte HANDS  = 0x06;
+        public const byte LEGS   = 0x07;
+        public const byte FEET   = 0x08;
+        public const byte NECK   = 0x09;
+        public const byte WAIST  = 0x0A;
+        public const byte EAR1   = 0x0B;
+        public const byte EAR2   = 0x0C;
+        public const byte RING1  = 0x0D;
+        public const byte RING2  = 0x0E;
+        public const byte BACK   = 0x0F;
+        public const byte LINK1  = 0x10;
+        public const byte LINK2  = 0x11;
+    }
+
+    public static class MAX_SIZES
+    {
+        public const byte MAX_CONTAINERS = 13;
+        public const byte MAX_CONTAINER_CONTENTS = 120;
+        public const byte SLOT_ERROR = 255;
+    }
 }

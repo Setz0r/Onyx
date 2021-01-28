@@ -36,7 +36,6 @@ namespace Game
 
         public void ClusterLoop()
         {
-            PacketHandler.Initialize();
             status = CLUSTERSTATUS.RUNNING;
             while (status != CLUSTERSTATUS.SHUTTINGDOWN)
             {

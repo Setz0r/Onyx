@@ -5,6 +5,7 @@ using Networking;
 using System.Text;
 using Data.World;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Runtime.InteropServices;
 
 namespace Data.Game.Entities
 {
@@ -13,6 +14,10 @@ namespace Data.Game.Entities
     public class PlayerRecord
     {
         public Dictionary<byte, byte> Jobs { get; set; }
+        public PlayerRecord()
+        {
+            Jobs = new Dictionary<byte, byte>();
+        }
     }
 
     [Serializable]
@@ -29,6 +34,11 @@ namespace Data.Game.Entities
         public ushort ExpTNL { get; set; }
         public Stats BaseStats { get; set; }
         public Stats BonusStats { get; set; }
+        public PlayerStats()
+        {
+            BaseStats = new Stats();
+            BonusStats = new Stats();
+        }
     }
 
     [Serializable]
@@ -50,6 +60,19 @@ namespace Data.Game.Entities
     }
 
     [Serializable]
+    [BsonIgnoreExtraElements]    
+    public class InventoryInfo
+    {        
+        public byte[] InventoryCap;
+        public ushort[] InventoryActive;
+        public InventoryInfo()
+        {
+            InventoryCap = new byte[MAX_SIZES.MAX_CONTAINERS];
+            InventoryActive = new ushort[MAX_SIZES.MAX_CONTAINERS];
+        }
+    }
+
+    [Serializable]
     [BsonIgnoreExtraElements]
     public class Player : Combat, IQueryResult
     {
@@ -57,6 +80,12 @@ namespace Data.Game.Entities
         {                        
             EntityType = ENTITYTYPE.PC;
             SyncId = 1;
+            VisitedZones = new byte[36];
+            Profile = new ProfileInfo();
+            Record = new PlayerRecord();
+            NameFlags = new UIntFlags();
+            InventorySizes = new InventoryInfo();
+            LockStyle = new EquipInfo();
         }
         
         public byte Gender
@@ -93,13 +122,23 @@ namespace Data.Game.Entities
         public PlayerRecord Record { get; set; }
         public UIntFlags NameFlags { get; set; }
 
+        [BsonIgnore]
         public Linkshell Linkshell { get; set; }
+        [BsonIgnore]
         public Linkshell Linkshell2 { get; set; }
 
-        public ushort SyncId { get; set; }
         public PLAYERSTATUS PlayerStatus { get; set; }
 
+        public InventoryInfo InventorySizes { get; set; }
+        public byte[] VisitedZones { get; set; }
+
         public byte GMLevel { get; set; }
+
+        public bool LockStyleEnabled { get; set; }
+        public EquipInfo LockStyle { get; set; }
+
+        [BsonIgnore]
+        public ushort SyncId { get; set; }
 
         public uint TimeCreate { get; set; }
         public uint TimeLastModify { get; set; }

@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Data.DataChunks.Incoming;
 using Data.Game;
+using Data.Game.Entities;
 using DatabaseClient;
 using MongoDB.Bson;
 using Servers;
@@ -29,6 +31,13 @@ namespace ConnectServer
     {
         static void Main(string[] args)
         {
+
+            string packetData = "53440300010200000002000003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+            byte[] packetBytes = Utility.StringToByteArray(packetData);
+            Player testPlayer = new Player();
+            bool success = LockStyleInfo.Instance.Handler(testPlayer, packetBytes);
+
+
             VanaTime.TYPE t = VanaTime.GetInstance().Sync();
             uint d = VanaTime.GetInstance().VanaDate;
             uint month = VanaTime.GetInstance().Month;

@@ -429,10 +429,10 @@ namespace Toolbelt
         public static void DecryptPacket(Blowfish blowfish, ref byte[]packet)
         {
             ushort tmp;
-            ushort FFXI_HEADER_SIZE = 28;
+            ushort PACKET_HEADER_SIZE = 28;
             ushort size = (ushort)packet.Length;
 
-            tmp = (ushort)((size - FFXI_HEADER_SIZE) / 4);
+            tmp = (ushort)((size - PACKET_HEADER_SIZE) / 4);
             tmp -= (ushort)(tmp % 2);
 
             for (int i = 0; i < tmp; i += 2)
