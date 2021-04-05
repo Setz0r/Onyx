@@ -26,7 +26,7 @@ namespace Data.DataChunks.Incoming
     // Data[0x04] byte is some sort of checksum value based on adding all the bytes from 0x8 to 0x5C(end)
     // Data[0x06] byte seems to be set to 1 when a character logs out and logs back in without restarting the game client
     // Data[0x0C] uint32 is the character id
-    // Data[0x4?] string is possibly a version string, would need captures from other versions to know for sure
+    // Data[0x40] 16 bytes is possibly an encrypted hash several MD5's called in method, highly encrypted from the looks of it. step debugging might reveal source info easier.
     // Data[0x54] string(3 bytes) is "WIN"
     // Data[0x5A] and Data[0x5B] go through some sort of client verifications and are set to a positive value, -1, or -2 depending on currently unknown circumstances 
     //

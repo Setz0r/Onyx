@@ -24,7 +24,7 @@ namespace Data.Game.Entities
     }
 
     [Serializable]
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    [StructLayout(LayoutKind.Explicit)]
     public class EquipInfo
     {
         [FieldOffset(0)] 
@@ -59,7 +59,7 @@ namespace Data.Game.Entities
     }
 
     [Serializable]
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    [StructLayout(LayoutKind.Explicit)]
     public class BaseEntityInfo
     {        
         [FieldOffset(0)] 
@@ -71,7 +71,7 @@ namespace Data.Game.Entities
     }
 
     [Serializable]
-    [StructLayout(LayoutKind.Explicit, Size=18, Pack = 1)]
+    [StructLayout(LayoutKind.Explicit, Size=18)]
     public class MovementInfo
     {
         [FieldOffset(0)]
@@ -85,11 +85,11 @@ namespace Data.Game.Entities
         [FieldOffset(17)]
         public byte MovementSpeed;
         [FieldOffset(18)]
-        public byte animationSpeed;
+        public byte AnimationSpeed;
     }
 
     [Serializable]
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    [StructLayout(LayoutKind.Explicit)]
     public class DisplayInfo
     {
         [FieldOffset(0)]

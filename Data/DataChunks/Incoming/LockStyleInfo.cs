@@ -10,22 +10,22 @@ using Toolbelt;
 namespace Data.DataChunks.Incoming
 {
     //
-    // Purpose: Received during zoning process
+    // Purpose: Received during zoning and when using style locking
     //
-    // Example Client Sent Data (0x00C) (length:12)
+    // Example Client Sent Data (0x053) (length:136)
     //     0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
     //    -----------------------------------------------
-    // 0: 0C 06 03 00 00 00 00 00 00 00 00 00                             
+    // 0: 53 44 A3 00 00 04 00 02 5E BF 09 60 69 02 00 00
+    // 1: EC 00 00 00 EC 00 00 00 00 00 00 00 00 00 00 00
+    // 2: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    // 3: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    // 4: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    // 5: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    // 6: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    // 7: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    // 8: 00 00 00 00 00 00 00 00 -- -- -- -- -- -- -- --                      
     //
-    // Notes: This is apparently the go ahead to send player info 
-    //
-    // reply with:
-    // Inventory Size
-    // Menu Config
-    // Char Jobs
-    // 
-    // perform:
-    // spawn pets/fellow
+    // Notes: This is used to set and request locked style information
     //
 
     [StructLayout(LayoutKind.Explicit)]
@@ -55,7 +55,8 @@ namespace Data.DataChunks.Incoming
 
         public bool Validator(LockStyleInfoDataHeader dataHeader, LockItem[] lockItems)
         {
-            if (dataHeader.count > EQUIP_SLOTS.BACK + 1 || dataHeader.type > 4 || lockItems.Length != dataHeader.count)
+            if (dataHeader.count > EQUIP_SLOTS.BACK + 1 || dataHeader.type > 4 || 
+                (lockItems != null && lockItems.Length != dataHeader.count))
                 return false;
 
             foreach (LockItem item in lockItems)
@@ -93,10 +94,8 @@ namespace Data.DataChunks.Incoming
             }
 
             if (Validator(LockStyleInfoDataHeader, lockItems))
-            {
-
-
-                // TODO: Handle the packet by sending player info chunks (0x1C, 0xB4, 0x1B)          
+            {                
+                // TODO: Handle the lockstyle information in player object i.e. Player->UpdateLockStyle(header,items)
 
                 return true;
             }

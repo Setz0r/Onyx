@@ -23,7 +23,12 @@ namespace Game
             IncomingPacketChunks.Add(0x00C, (Player p, byte[] d) => { return PlayerInfoRequest.Instance.Handler(p, d); });
             IncomingPacketChunks.Add(0x00D, (Player p, byte[] d) => { return ZoneLeave.Instance.Handler(p, d); });
             IncomingPacketChunks.Add(0x011, (Player p, byte[] d) => { return ZoneSuccess.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x015, (Player p, byte[] d) => { return ClientUpdate.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x01A, (Player p, byte[] d) => { return PlayerAction.Instance.Handler(p, d); });
             IncomingPacketChunks.Add(0x053, (Player p, byte[] d) => { return LockStyleInfo.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x05B, (Player p, byte[] d) => { return DialogChoice.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x061, (Player p, byte[] d) => { return EquipmentScreen.Instance.Handler(p, d); });
+            IncomingPacketChunks.Add(0x0E0, (Player p, byte[] d) => { return SearchComment.Instance.Handler(p, d); });
         }
 
         public static bool ProcessDataChunk(Player player, byte[] chunkData, ZoneCluster cluster)
@@ -31,12 +36,17 @@ namespace Game
             if (chunkData.Length > 0)
             {
                 byte id = chunkData[0];
+                int size = chunkData[1] * 2;
+
                 Func<Player, byte[], bool> method;
 
                 if (!IncomingPacketChunks.TryGetValue(id, out method))
                     return false;
                 
-                bool result = method(player, chunkData);
+                bool result = false;
+                
+                if (size >= chunkData.Length)
+                    result = method(player, chunkData);
 
                 return result;
             }

@@ -32,13 +32,10 @@ namespace ConnectServer
         static void Main(string[] args)
         {
 
-                                
-
-            string packetData = "5344A300000400025EBF096069020000EC000000EC00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+            string packetData = "1510C5122B8697C36C76FCBFA69BFC4300000300EC005201873F7B7800000000";
             byte[] packetBytes = Utility.StringToByteArray(packetData);
             Player testPlayer = new Player();
-            bool success = LockStyleInfo.Instance.Handler(testPlayer, packetBytes);
-
+            bool success = ClientUpdate.Instance.Handler(testPlayer, packetBytes);
 
             VanaTime.TYPE t = VanaTime.GetInstance().Sync();
             uint d = VanaTime.GetInstance().VanaDate;
