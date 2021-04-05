@@ -14,7 +14,7 @@ namespace Networking
     public class UDPClient
     {
         private UDPServer server;
-        private UInt32 lastDataTime;
+        private uint lastDataTime;
         public EndPoint endpoint;
         public byte[] dataBuffer;
         public int bufferSize;

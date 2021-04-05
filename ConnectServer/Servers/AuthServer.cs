@@ -37,7 +37,7 @@ namespace Servers
             //return MySQL.CheckIPBanned(IP);
         }
 
-        private static int AuthDataHandler(SessionTcpClient client, Byte[] data, int Length)
+        private static int AuthDataHandler(SessionTcpClient client, byte[] data, int Length)
         {
             ByteRef response = new ByteRef(33);
             int MaxUserName = 16;
@@ -51,9 +51,9 @@ namespace Servers
             // Check if IP banned
             if (!IsIPBanned(client.Session.Ip_address))
             {
-                Byte[] bUsername = new Byte[MaxUserName];
-                Byte[] bPassword = new Byte[MaxPassword];
-                Byte[] bMac = new Byte[MaxMac];
+                byte[] bUsername = new byte[MaxUserName];
+                byte[] bPassword = new byte[MaxPassword];
+                byte[] bMac = new byte[MaxMac];
 
                 Array.Copy(data, 0, bUsername, 0, MaxUserName);
                 Array.Copy(data, MaxUserName, bPassword, 0, MaxPassword);

@@ -20,7 +20,6 @@ namespace Game
         {
             zones = new ConcurrentDictionary<ZONEID, Zone>();
             clients = new ConcurrentDictionary<EndPoint, ZONEID>();
-            
             zoneTasks = new List<Task>();
         }
 
@@ -49,14 +48,17 @@ namespace Game
         {
             foreach (var zone in zones)
             {
-                foreach (var player in zone.Value.Players)
-                    player.Value.Save();
+                // TODO: create player loading/saving mechanic in this class
+
+                //foreach (var player in zone.Value.Players) { }
+                // TODO : save all players
+
                 zone.Value.Shutdown();
             }
             return true;
         }
 
-        public void Listen(string hostname = "127.0.0.1", uint portnum = 54230)
+        public void Listen(string hostname = "127.0.0.1", uint portnum = 54240)
         {
             host = hostname;
             ip = Utility.IPToInt(host, true);
@@ -110,7 +112,7 @@ namespace Game
                     byte[] key = Utility.StringToByteArray(keybytes);
                     player.Client.SetBlowfishKey(key);
                     player.Client.RecvData(buffer.Skip(offset).Take(size).ToArray());
-                    UInt16 bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, this);
+                    ushort bytesProcessed = PacketHandler.ProcessPacket(player, player.Client.dataBuffer, size, this);
                     if (bytesProcessed > 0)
                     {
                         player.Client.ResetBuffer();
@@ -147,8 +149,8 @@ namespace Game
 
         public UDPServer server;
         public string host;
-        public UInt32 ip;
-        public UInt32 ipp;
+        public uint ip;
+        public uint ipp;
         public uint port;
 
         public CLUSTERSTATUS status;

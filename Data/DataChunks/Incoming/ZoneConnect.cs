@@ -26,7 +26,7 @@ namespace Data.DataChunks.Incoming
     // Data[0x04] byte is some sort of checksum value based on adding all the bytes from 0x8 to 0x5C(end)
     // Data[0x06] byte seems to be set to 1 when a character logs out and logs back in without restarting the game client
     // Data[0x0C] uint32 is the character id
-    // Data[0x4?] string is possibly a version string, would need captures from other versions to know for sure
+    // Data[0x40] 16 bytes is possibly an encrypted hash several MD5's called in method, highly encrypted from the looks of it. step debugging might reveal source info easier.
     // Data[0x54] string(3 bytes) is "WIN"
     // Data[0x5A] and Data[0x5B] go through some sort of client verifications and are set to a positive value, -1, or -2 depending on currently unknown circumstances 
     //
@@ -35,25 +35,31 @@ namespace Data.DataChunks.Incoming
     public struct ZoneConnectData
     {
         [FieldOffset(0)]
-        public BaseChunk header;
+        public ChunkHeader header;
         [FieldOffset(12)]
         public uint id;           // character id, for now this is the only important information we need.
     }
 
     public sealed class ZoneConnect : BaseChunk
     {
+        public const int MinSize = 0x0;
+        public const int MaxSize = 0xFF;
+        
         public bool Validator(ZoneConnectData data)
         {
             if (data.id > 65535 ) //  TODO: validate player id exists and is currently logged in
                 return false;
 
-            Logger.Success("we got 0x0A");
+            Logger.Success("we got 0x00A");
 
             return true;
         }
 
         public bool Handler(Player player, byte[] bytes)
         {
+            if (bytes.Length < MinSize || bytes.Length > MaxSize)
+                return false;
+
             ZoneConnectData zoneConnectData = Utility.Deserialize<ZoneConnectData>(bytes);
             if (Validator(zoneConnectData))
             {

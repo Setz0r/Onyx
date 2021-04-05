@@ -53,11 +53,11 @@ namespace Toolbelt
 
         public static void Display(string logText, object[] args = null)
         {
-            string outString = String.Empty;
+            string outString = string.Empty;
             if (args == null)
-                outString = String.Format(Colorize($"{ConsoleColor.DarkGray}") + DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss.ff]") + logText);
+                outString = string.Format(Colorize($"{ConsoleColor.DarkGray}") + DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss.ff]") + logText);
             else
-                outString = String.Format(Colorize($"{ConsoleColor.DarkGray}") + DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss.ff]") + logText, args.Select(x => x.ToString()).ToArray());
+                outString = string.Format(Colorize($"{ConsoleColor.DarkGray}") + DateTime.Now.ToString("[yyyy/MM/dd HH:mm:ss.ff]") + logText, args.Select(x => x.ToString()).ToArray());
             Console.WriteLine(outString);
             Console.Write(new StringBuilder().SetMode(Mode.Reset));
             string FileText = Regex.Replace(outString, @"\x1b\[([0-9,A-Z]{1,2}(;[0-9]{1,2})?(;[0-9]{3})?)?[m|K]?", "");

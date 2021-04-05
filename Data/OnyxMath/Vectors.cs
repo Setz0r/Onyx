@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Data.OnyxMath
 {
-    [StructLayout(LayoutKind.Explicit, Size=12, Pack=1)]
+    [StructLayout(LayoutKind.Explicit, Size=12)]
     public struct OnyxVec3
     {
         [FieldOffset(0)]

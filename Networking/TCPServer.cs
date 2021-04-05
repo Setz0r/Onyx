@@ -113,7 +113,7 @@ namespace Networking
                 {
                     foreach (var session in _sessions)
                     {
-                        Byte[] bData = new Byte[4096];
+                        byte[] bData = new byte[4096];
                         SessionTcpClient client = session.Value;
                         Array.Clear(bData, 0, bData.Length);
                         if (client.IsDead || !IsSocketConnected(client.Client))
@@ -145,8 +145,8 @@ namespace Networking
             SessionTcpClient client = (SessionTcpClient)obj;
             
             NetworkStream stream = client.GetStream();
-            Boolean bClientConnected = true;
-            Byte[] bData = new Byte[4096];
+            bool bClientConnected = true;
+            byte[] bData = new byte[4096];
 
             while (bClientConnected)
             {

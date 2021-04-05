@@ -49,7 +49,7 @@ namespace Servers
             SessionHandler.KillSession(client.Session);
         }
 
-        private static int DataDataHandler(SessionTcpClient client, Byte[] data, int Length)
+        private static int DataDataHandler(SessionTcpClient client, byte[] data, int Length)
         {
             ByteRef recv = new ByteRef(data, Length);
             byte id = recv.GetByte(0);
@@ -119,7 +119,6 @@ namespace Servers
 
                         int j = 0;
 
-                        // TODO: get character list from database
                         List<Player> CharacterList = DBClient.GetMany<Player>(DBREQUESTTYPE.PLAYER, p => p.AccountId == client.Session.Account_id);
                         client.Session.Char_id_list = new List<uint>();
                         client.Session.Char_id_list.Clear();
@@ -143,15 +142,16 @@ namespace Servers
                                     CharList.Set<byte>(46 + 32 + j * 140, C.Stats.Job);
                                     CharList.Set<byte>(73 + 32 + j * 140, C.Stats.JobLevel);
 
+                                    // TODO: look into block copying structs
                                     CharList.Set<byte>(44 + 32 + j * 140, C.Look.Model.Race);
                                     CharList.Set<byte>(56 + 32 + j * 140, C.Look.Model.Face);
-                                    CharList.Set<ushort>(58 + 32 + j * 140, C.Look.Head);
-                                    CharList.Set<ushort>(60 + 32 + j * 140, C.Look.Body);
-                                    CharList.Set<ushort>(62 + 32 + j * 140, C.Look.Hands);
-                                    CharList.Set<ushort>(64 + 32 + j * 140, C.Look.Legs);
-                                    CharList.Set<ushort>(66 + 32 + j * 140, C.Look.Feet);
-                                    CharList.Set<ushort>(68 + 32 + j * 140, C.Look.Main);
-                                    CharList.Set<ushort>(70 + 32 + j * 140, C.Look.Sub);
+                                    CharList.Set<ushort>(58 + 32 + j * 140, C.Look.Equipment.Head);
+                                    CharList.Set<ushort>(60 + 32 + j * 140, C.Look.Equipment.Body);
+                                    CharList.Set<ushort>(62 + 32 + j * 140, C.Look.Equipment.Hands);
+                                    CharList.Set<ushort>(64 + 32 + j * 140, C.Look.Equipment.Legs);
+                                    CharList.Set<ushort>(66 + 32 + j * 140, C.Look.Equipment.Feet);
+                                    CharList.Set<ushort>(68 + 32 + j * 140, C.Look.Equipment.Main);
+                                    CharList.Set<ushort>(70 + 32 + j * 140, C.Look.Equipment.Sub);
 
                                     CharList.Set<byte>(72 + 32 + j * 140, (byte)C.Location.CurrentZone);
                                     CharList.Set<ushort>(78 + 32 + j * 140, C.Location.CurrentZone);
@@ -204,7 +204,7 @@ namespace Servers
                         zoneChar.Account_id = 1001;
                         zoneChar.Zone_ip_str = "127.0.0.1";
                         zoneChar.Zone_ip = Utility.IPToInt("127.0.0.1", false);
-                        zoneChar.Zone_port = 54230;
+                        zoneChar.Zone_port = 54240;
                         
                         if (zoneChar != null) {
 
@@ -292,7 +292,7 @@ namespace Servers
 
         public static void Initialize(string address, int port)
         {
-            dataServer = new TCPServer("Data Server", "0.0.0.0", 54230, DataConnectHandler, DataDataHandler, DataDisconnectHandler);
+            dataServer = new TCPServer("Data Server", address, port, DataConnectHandler, DataDataHandler, DataDisconnectHandler);
         }
     }
 }

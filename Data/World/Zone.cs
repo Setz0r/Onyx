@@ -46,10 +46,9 @@ namespace Data.World
         {
             Logger.Info("Zone {0} shutting down", new object[] { (int)ZoneId });
             Thread.Sleep(3000);
-            foreach (var player in Players)
-            {
-                player.Value.Save();
-            }            
+            
+            // TODO: handle zone shutdown tasks
+
             Logger.Info("Zone {0} successfully shutdown", new object[] { (int)ZoneId });
             return true;
         }
@@ -99,6 +98,8 @@ namespace Data.World
         public REGION Region;
         public CONTINENT Continent;
         public WeatherInfo Weather;
+
+        public ZoneAnimationInfo AnimationInfo;
 
         public ConcurrentDictionary<uint, Player> Players;
         public ConcurrentDictionary<uint, Npc> Npcs;

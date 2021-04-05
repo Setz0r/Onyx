@@ -8,7 +8,7 @@ using System.Text;
 namespace Data.Game
 {
     [Serializable]
-    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    [StructLayout(LayoutKind.Explicit)]
     public class LinkshellColor
     {
         [FieldOffset(0)]

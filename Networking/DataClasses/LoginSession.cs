@@ -51,15 +51,15 @@ namespace Networking
         public void AuthProcessData(byte[] data)
         {
             Logger.Info("AUTHPROCESSDATA: " + data.Length);
-            
-            Byte[] bUsername = new Byte[16];
-            Byte[] bPassword = new Byte[16];
+
+            byte[] bUsername = new byte[16];
+            byte[] bPassword = new byte[16];
 
             Array.Copy(data, 0, bUsername, 0, 16);
             Array.Copy(data, 16, bPassword, 0, 16);
 
-            String Username = Encoding.ASCII.GetString(bUsername).TrimEnd((Char)0);
-            String Password = Encoding.ASCII.GetString(bPassword).TrimEnd((Char)0);
+            string Username = Encoding.ASCII.GetString(bUsername).TrimEnd((char)0);
+            string Password = Encoding.ASCII.GetString(bPassword).TrimEnd((char)0);
 
             ByteRef response = new ByteRef(33);
 

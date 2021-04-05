@@ -5,6 +5,9 @@ using Networking;
 using System.Text;
 using Data.World;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Runtime.InteropServices;
+using System.Collections.Concurrent;
+using Data.DataChunks;
 
 namespace Data.Game.Entities
 {
@@ -13,6 +16,10 @@ namespace Data.Game.Entities
     public class PlayerRecord
     {
         public Dictionary<byte, byte> Jobs { get; set; }
+        public PlayerRecord()
+        {
+            Jobs = new Dictionary<byte, byte>();
+        }
     }
 
     [Serializable]
@@ -29,6 +36,11 @@ namespace Data.Game.Entities
         public ushort ExpTNL { get; set; }
         public Stats BaseStats { get; set; }
         public Stats BonusStats { get; set; }
+        public PlayerStats()
+        {
+            BaseStats = new Stats();
+            BonusStats = new Stats();
+        }
     }
 
     [Serializable]
@@ -50,6 +62,19 @@ namespace Data.Game.Entities
     }
 
     [Serializable]
+    [BsonIgnoreExtraElements]    
+    public class InventoryInfo
+    {        
+        public byte[] InventoryCap;
+        public ushort[] InventoryActive;
+        public InventoryInfo()
+        {
+            InventoryCap = new byte[MAX_SIZES.MAX_CONTAINERS];
+            InventoryActive = new ushort[MAX_SIZES.MAX_CONTAINERS];
+        }
+    }
+
+    [Serializable]
     [BsonIgnoreExtraElements]
     public class Player : Combat, IQueryResult
     {
@@ -57,31 +82,17 @@ namespace Data.Game.Entities
         {                        
             EntityType = ENTITYTYPE.PC;
             SyncId = 1;
+            VisitedZones = new byte[36];
+            Profile = new ProfileInfo();
+            Record = new PlayerRecord();
+            NameFlags = new UIntFlags();
+            InventorySizes = new InventoryInfo();
+            LockStyle = new EquipInfo();
         }
         
         public byte Gender
         {
             get { return (byte)((Look.Model.Race) % 2 ^ ((Look.Model.Race > 6) ? 1 : 0)); }
-        }
-
-        public int ProcessPacketData()
-        {
-            int bytesProcessed = 0;
-            if (Client != null && Client.bufferSize > 0)
-            {
-                // TODO: process client data
-            }
-            return bytesProcessed;
-        }
-
-        public bool Load(uint id)
-        {
-            return true;
-        }
-
-        public bool Save()
-        {
-            return true;
         }
 
         public uint PlayerId { get; set; }
@@ -93,9 +104,11 @@ namespace Data.Game.Entities
         [BsonIgnore]
         [field: NonSerialized]
         public UDPClient Client { get; set; }
+
         [BsonIgnore]
         [field: NonSerialized]
         public Zone CurrentZone { get; set; }
+
         [BsonIgnore]
         [field: NonSerialized]
         public Zone PreviousZone { get; set; }
@@ -103,13 +116,30 @@ namespace Data.Game.Entities
         public PlayerRecord Record { get; set; }
         public UIntFlags NameFlags { get; set; }
 
+        [BsonIgnore]
+        [field: NonSerialized]
         public Linkshell Linkshell { get; set; }
+        [BsonIgnore]
+        [field: NonSerialized]
         public Linkshell Linkshell2 { get; set; }
 
-        public ushort SyncId { get; set; }
         public PLAYERSTATUS PlayerStatus { get; set; }
 
+        public InventoryInfo InventorySizes { get; set; }
+        public byte[] VisitedZones { get; set; }
+
         public byte GMLevel { get; set; }
+
+        public bool LockStyleEnabled { get; set; }
+        public EquipInfo LockStyle { get; set; }
+
+        [BsonIgnore]
+        [field: NonSerialized]
+        public ConcurrentDictionary<ushort, BaseChunk> IncomingRequests;
+
+        [BsonIgnore]
+        [field: NonSerialized]
+        public ushort SyncId { get; set; }
 
         public uint TimeCreate { get; set; }
         public uint TimeLastModify { get; set; }

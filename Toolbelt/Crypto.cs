@@ -8,10 +8,10 @@ namespace Toolbelt
 {
     public class Blowfish
     {
-        public UInt32[] key = new UInt32[5];
+        public uint[] key = new uint[5];
         public byte[] hash = new byte[16];
-        public UInt32[] P = new UInt32[18];
-        public UInt32[] S = new UInt32[1024];
+        public uint[] P = new uint[18];
+        public uint[] S = new uint[1024];
     }
 
     public static class Crypto
@@ -290,17 +290,17 @@ namespace Toolbelt
             0xE3, 0xDF, 0x8F, 0x57, 0xE6, 0x72, 0xC3, 0x3A
         };
 
-        private static UInt32 TT(UInt32 working, UInt32[] S)
+        private static uint TT(uint working, uint[] S)
         {
             return ((S[256 + ((working >> 8) & 0xff)] & 1) ^ 32) + ((S[768 + (working >> 24)] & 1) ^ 32) + S[512 + ((working >> 16) & 0xff)] + S[working & 0xff];
         }
 
-        public static void BlowfishEncipher(ref UInt32 xl, ref UInt32 xr, UInt32[] P, UInt32[] S)
+        public static void BlowfishEncipher(ref uint xl, ref uint xr, uint[] P, uint[] S)
         {
-            UInt32 Xl;
-            UInt32 Xr;
-            UInt32 temp;
-            UInt32 i;
+            uint Xl;
+            uint Xr;
+            uint temp;
+            uint i;
 
             const int N = 16;
             Xl = xl;
@@ -327,12 +327,12 @@ namespace Toolbelt
             xr = Xr;
         }
 
-        public static void BlowfishDecipher(ref UInt32 xl, ref UInt32 xr, UInt32[] P, UInt32[] S)
+        public static void BlowfishDecipher(ref uint xl, ref uint xr, uint[] P, uint[] S)
         {
-            UInt32 Xl;
-            UInt32 Xr;
-            UInt32 temp;
-            UInt32 i;
+            uint Xl;
+            uint Xr;
+            uint temp;
+            uint i;
 
             Xl = xl;
             Xr = xr;
@@ -358,14 +358,14 @@ namespace Toolbelt
             xr = Xr;
         }
 
-        public static UInt32[] BlowfishInitialize(byte[] keyhash, UInt16 keybytes, ref UInt32[] P, ref UInt32[] S)
+        public static uint[] BlowfishInitialize(byte[] keyhash, ushort keybytes, ref uint[] P, ref uint[] S)
         {
-            Int16 i;
-            Int16 j;
-            Int16 k;
-            UInt32 data;
-            UInt32 datal;
-            UInt32 datar;
+            short i;
+            short j;
+            short k;
+            uint data;
+            uint datal;
+            uint datar;
             
             sbyte[] key = ConvertHashToSByteArray(keyhash);
 
@@ -428,35 +428,35 @@ namespace Toolbelt
 
         public static void DecryptPacket(Blowfish blowfish, ref byte[]packet)
         {
-            UInt16 tmp;
-            UInt16 FFXI_HEADER_SIZE = 28;
-            UInt16 size = (UInt16)packet.Length;
+            ushort tmp;
+            ushort PACKET_HEADER_SIZE = 28;
+            ushort size = (ushort)packet.Length;
 
-            tmp = (UInt16)((size - FFXI_HEADER_SIZE) / 4);
+            tmp = (ushort)((size - PACKET_HEADER_SIZE) / 4);
             tmp -= (ushort)(tmp % 2);
 
             for (int i = 0; i < tmp; i += 2)
             {
                 int posa = (i + 7) * 4;
                 int posb = (i + 8) * 4;
-                UInt32 a = BitConverter.ToUInt32(packet.Skip(posa).Take(4).ToArray());
-                UInt32 b = BitConverter.ToUInt32(packet.Skip(posb).Take(4).ToArray());
+                uint a = BitConverter.ToUInt32(packet.Skip(posa).Take(4).ToArray());
+                uint b = BitConverter.ToUInt32(packet.Skip(posb).Take(4).ToArray());
                 Crypto.BlowfishDecipher(ref a, ref b, blowfish.P, blowfish.S);
                 Buffer.BlockCopy(BitConverter.GetBytes(a), 0, packet, posa, 4);
                 Buffer.BlockCopy(BitConverter.GetBytes(b), 0, packet, posb, 4);
             }
         }
 
-        public static void EncryptPacket(Blowfish blowfish, ref byte[]packet, UInt32 packetsize)
+        public static void EncryptPacket(Blowfish blowfish, ref byte[]packet, uint packetsize)
         {
-            UInt32 CypherSize = (uint)((packetsize / 4) & -2);
+            uint CypherSize = (uint)((packetsize / 4) & -2);
 
             for (int i = 0; i < CypherSize; i += 2)
             {
                 int posa = (i + 7) * 4;
                 int posb = (i + 8) * 4;
-                UInt32 a = BitConverter.ToUInt32(packet.Skip(posa).Take(4).ToArray());
-                UInt32 b = BitConverter.ToUInt32(packet.Skip(posb).Take(4).ToArray());
+                uint a = BitConverter.ToUInt32(packet.Skip(posa).Take(4).ToArray());
+                uint b = BitConverter.ToUInt32(packet.Skip(posb).Take(4).ToArray());
                 BlowfishEncipher(ref a, ref b, blowfish.P, blowfish.S);
                 Buffer.BlockCopy(BitConverter.GetBytes(a), 0, packet, posa, 4);
                 Buffer.BlockCopy(BitConverter.GetBytes(b), 0, packet, posb, 4);

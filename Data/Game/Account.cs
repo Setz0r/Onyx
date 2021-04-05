@@ -39,8 +39,8 @@ namespace Data.Game
         {
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
             {
-
-                
+                if (username.Equals(Username) && password == Password)
+                    return true;
             }
             return false;
         }
