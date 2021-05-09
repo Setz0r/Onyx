@@ -8,7 +8,7 @@ entity update packet 0x00E notes
 0x10:0x13 - uint32 - entity Y
 0x14:0x17 - uint32 - entity Z
 0x18:0x19 - uint16 -. run count
-0x1A:0x00000000001B - uint16 - target index << 1
+0x1A:0x1B - uint16 - target index << 1
 0x1C:     - byte   - movement speed
 0x1D:     - byte   - animation speed
 0x1E:     - byte   - hp %
