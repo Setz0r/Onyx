@@ -14,9 +14,9 @@ entity update packet 0x00E notes
 0x1E:     - byte   - hp %
 0x1F:     - byte   - animation
 0x20:0x23 - uint32 - misc flags - referenced by individual 8 and 16 bit (x20 status, x21 flags?)
-0x24:     - byte   - applied to ent+471
-0x25:	  - byte   - multiplied by 0.1 and set to (float)ent+516 
-0x26:     - byte   - flags of some sort, passed to function (ent,pkt[0x26] & 0xf, (pkt[0x26] shr 4) & 3, (pkt[0x26] shr 6) & 1)
+0x24:     - byte   - applied to ent+471  (referred to as UNK0, seems to be pre-spawn attribute)
+0x25:	  - byte   - multiplied by 0.1 and set to (float)ent+516  (referred to as UNK1, pre-spawn attribute)
+0x26:     - byte   - flags of some sort, passed to function (ent,pkt[0x26] & 0xf, (pkt[0x26] shr 4) & 3, (pkt[0x26] shr 6) & 1) (referred to as UNK2, pre-spawn attribute)
 0x27:     - byte   - name prefix
 0x28:	  - byte   - unknown : ent+300 ^= ((ent+300 ^ (pkt[0x28] shl 22)) & 0x400000) (flags, 0x10 terror, 0x08 death animation while alive, 0x40 fellows, 0x04 pet spawns)
 0x29:     - byte   - allegience
